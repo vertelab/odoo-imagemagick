@@ -30,8 +30,8 @@ import re
 
 from openerp.tools.safe_eval import safe_eval as eval
 
-from wand.image import Image
-from wand.drawing import Drawing
+# from wand.image import Image
+# from wand.drawing import Drawing
 
 
 
@@ -46,18 +46,17 @@ class website_imagemagic(http.Controller):
         return recipe.send_file(http,image)
 
 
-
 class image_recipe(models.Model):
     _name = "image.recipe"
     
-    name = fields.Char('Name', )
-    recipe = fields.Text('Recipe', )
-    param_ids = Many2one('image.recipe.param')
+    name = fields.Char(string='Name', )
+    recipe = fields.Text(string='Recipe', )
+    param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
   
   # http://docs.wand-py.org/en/0.4.1/index.html
   
     def send_file(self,http,image):
-        return http.send_file(image.data,filename=image.filename,mtime=image.mtime)
+        return http.send_file(image.data, filename=image.filename, mtime=image.mtime)
 
 
     def run(self,image):
@@ -71,6 +70,6 @@ class image_recipe(models.Model):
 class image_recipe_param(models.Model):
     _name = "image.recipe.param"
     
-    name = fields.Char('Name', )
-    value = fields.Char('Recipe', )
-    recipe_id = fields.Many2One('image.recipe')
+    name = fields.Char(string='Name', )
+    value = fields.Char(string='Recipe', )
+    recipe_id = fields.Many2one(comodel_name='image.recipe', string='Recipe')
