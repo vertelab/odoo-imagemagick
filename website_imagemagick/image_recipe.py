@@ -33,8 +33,6 @@ from openerp.tools.safe_eval import safe_eval as eval
 # from wand.image import Image
 # from wand.drawing import Drawing
 
-
-
 import logging
 _logger = logging.getLogger(__name__)
 
