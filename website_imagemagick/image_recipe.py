@@ -36,6 +36,7 @@ from openerp.tools.safe_eval import safe_eval as eval
 from wand.image import Image
 from wand.display import display
 from wand.drawing import Drawing
+import subprocess
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -79,17 +80,20 @@ class image_recipe(models.Model):
         return self.write_date
 
     def send_file(self, http, attachment=None, url=None):   # return a image while given an attachment or an url
+        img_watermark = Image(filename='/usr/share/odoo-addons/addons/web/static/src/img/nologo.png')
         if attachment:
-            return http.send_file(StringIO(str(self.run(self.attachment_to_img(attachment)).make_blob(format='jpg'))), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment), img_watermark=img_watermark).make_blob(format='jpg')), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
         return http.send_file(self.run(self.url_to_img(url)), filename=url)
 
 
-    def run(self, image):   # return a image with specified recipe
-        eval(self.recipe, {
+    def run(self, image, **kwargs):   # return a image with specified recipe
+
+        kwargs.update({p.name: p.value for p in self.param_ids})
+        kwargs.update({
             'image': image,
             'user': self.env['res.users'].browse(self._uid),
-            'result': None,
-            }, mode='exec', nocopy=True)
+            })
+        eval(self.recipe, kwargs, mode='exec', nocopy=True)
         return image
 
 
