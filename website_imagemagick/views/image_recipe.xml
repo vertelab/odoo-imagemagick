@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!-- image recipe kanban view -->
+        <record id="image_recipe_kanban_view" model="ir.ui.view">
+            <field name="name">image.recipe.kanban</field>
+            <field name="model">image.recipe</field>
+            <field name="type">kanban</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="recipe">
+                    <field name="color"/>
+                    <field name="name"/>
+                    <field name="recipe"/>
+                    <field name="param_ids"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_dropdown_toggle oe_dropdown_kanban" groups="base.group_user">
+                                <span class="oe_e">í</span>
+                                <ul class="oe_dropdown_menu">
+                                    <t t-if="widget.view.is_action_enabled('edit')"><li><a type="edit">Edit...</a></li></t>
+                                    <t t-if="widget.view.is_action_enabled('delete')"><li><a type="delete">Delete</a></li></t>
+                                    <li><ul class="oe_kanban_colorpicker" data-field="color"/></li>
+                                </ul>
+                            </div>
+                            <div class="oe_kanban_content">
+                                <div><b><field name="name"/></b></div>
+                                <div><field name="recipe"/></div>
+                            </div>
+                            <div class="oe_clear"></div>
+                        </div>
+                    </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- image recipe form view -->
+        <record id="image_recipe_form_view" model="ir.ui.view">
+            <field name="name">image.recipe.form</field>
+            <field name="model">image.recipe</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Image Recipe">
+                    <sheet string="Image Recipe">
+                        <h1>
+                            <field name="name" placeholder="Image Recipe..." class="oe_inline"/>
+                        </h1>
+                        <group>
+                            <field name="recipe"/>
+                            <field name="param_ids"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- image recipe tree view -->
+        <record id="image_recipe_tree_view" model="ir.ui.view">
+            <field name="name">image.recipe.tree</field>
+            <field name="model">image.recipe</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="param_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- image recipe parameter form view -->
+        <record id="image_recipe_param_form_view" model="ir.ui.view">
+            <field name="name">image.recipe.param.form</field>
+            <field name="model">image.recipe.param</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Image Recipe Parameter">
+                    <sheet string="Image Recipe Parameter">
+                        <h1>
+                            <field name="name" placeholder="Image Recipe Parameter..." class="oe_inline"/>
+                        </h1>
+                        <group>
+                            <field name="recipe_id"/>
+                            <field name="value"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- image recipe parameter tree view -->
+        <record id="image_recipe_param_tree_view" model="ir.ui.view">
+            <field name="name">image.recipe.param.tree</field>
+            <field name="model">image.recipe.param</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="recipe_id"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_image_recipe_all_view" model="ir.actions.act_window">
+            <field name="name">Image Recipe</field>
+            <field name="res_model">image.recipe</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="view_id" ref="image_recipe_tree_view"/>
+            <field name="context">{"search_default_current": 1}</field>
+        </record>
+
+        <record id="action_image_recipe_param_all_view" model="ir.actions.act_window">
+            <field name="name">Image Recipe</field>
+            <field name="res_model">image.recipe.param</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="image_recipe_param_tree_view"/>
+            <field name="context">{"search_default_current": 1}</field>
+        </record>
+
+        <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_config" sequence="100" action="action_image_recipe_all_view"/>
+        <menuitem id="menu_image_recipe_param_all_view" name="Image Recipe Param" parent="base.menu_config" sequence="101" action="action_image_recipe_param_all_view"/>
+
+
+    </data>
+</openerp>

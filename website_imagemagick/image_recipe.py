@@ -59,6 +59,7 @@ class website_imagemagic(http.Controller):
 class image_recipe(models.Model):
     _name = "image.recipe"
 
+    color = fields.Integer(string='Color Index')
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
