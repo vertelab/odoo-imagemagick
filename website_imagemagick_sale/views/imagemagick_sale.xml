@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <template id="products_item" inherit_id="website_sale.products_item" priority="99">
+            <xpath expr="//img[@itemprop='image']" position="replace">
+                <img itemprop="image" class="img img-responsive" t-att-src="'/imagefield/product.template/image_medium/%s/id/2' % product.id" t-att-alt="product.name"/>
+            </xpath>
+        </template>
+
+    </data>
+</openerp>

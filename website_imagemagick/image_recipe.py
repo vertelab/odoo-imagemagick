@@ -60,37 +60,23 @@ class website_imagemagic(http.Controller):
     @http.route(['/imageurl/<string:url>/id/<model("image.recipe"):recipe>','/imageurl/<string:url>/ref/<string:recipe>'], type='http', auth="public", website=True)
     def view_url(self, url=None, recipe=None, recipe_ref=None, **post):
         if recipe_ref:
-            recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'        
+            recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
         return recipe.send_file(http, url=url)
 
 
     @http.route([
         '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
         '/imagefield/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
-        '/imageobj/<>/ref/<string:recipe>'
+        #~ '/imageobj/<>/ref/<string:recipe>'
 
-        ], auth="public", website=True, multilang=False)
+        ], type='http', auth="public", website=True, multilang=False)
     def website_image(self, model, id, field, recipe=None,recipe_ref=None):
-        """ Fetches the requested field and ensures it does not go above
-        (max_width, max_height), resizing it if necessary.
-
-        If the record is not found or does not have the requested field,
-        returns a placeholder image via :meth:`~.placeholder`.
-
-        Sets and checks conditional response parameters:
-        * :mailheader:`ETag` is always set (and checked)
-        * :mailheader:`Last-Modified is set iif the record has a concurrency
-          field (``__last_update``)
-
-        The requested field is assumed to be base64-encoded image data in
-        all cases.
-        """
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
-       
-        recipe.send_file(http,field=field,model=model,id=id.split('_')[0])
-        
-        
+        #~ recipe.send_file(http,field=field,model=model,id=id.split('_')[0])
+        recipe.send_file(http,field=field,model=model,id=id)
+
+
         try:
             idsha = id.split('_')
             id = idsha[0]
@@ -120,7 +106,8 @@ class image_recipe(models.Model):
             return Image(filename=path + attachment.url)
         return Image(StringIO(attachment.datas).decode('base64'))
 
-    def data_to_img(self, data):  # return an image object while filename is an attachment
+    def data_to_img(self, data):  # return an image object while filename is data
+        _logger.warning('---------------: %s' % data)
         return Image(StringIO(data).decode('base64'))
 
     def url_to_img(self, url):  # return an image object while filename is an url
@@ -133,7 +120,7 @@ class image_recipe(models.Model):
 
     def send_file(self, http, attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         if field:
-            o = self.env[model].browse(id)
+            o = self.env[model].browse(int(id))
             return http.send_file(StringIO(self.run(self.data_to_img(o.read()[0][field])).make_blob(format='jpg')), filename=field, mtime=self.get_mtime(o))
         if attachment:
             return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format='jpg')), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
