@@ -30,6 +30,7 @@ from openerp.modules import get_module_resource, get_module_path
 import werkzeug
 import pytz
 import re
+import hashlib
 
 from openerp.tools.safe_eval import safe_eval as eval
 
@@ -64,8 +65,10 @@ class website_imagemagic(http.Controller):
 
 
     @http.route([
-        '/imagefield/<model>/<id>/<field>/ref/<recipe_ref>',
-        '/imagefield/<model>/<id>/<field>/id/<model("image.recipe"):recipe>'
+        '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
+        '/imagefield/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
+        '/imageobj/<>/ref/<string:recipe>'
+
         ], auth="public", website=True, multilang=False)
     def website_image(self, model, id, field, recipe=None,recipe_ref=None):
         """ Fetches the requested field and ensures it does not go above
