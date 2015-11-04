@@ -104,10 +104,11 @@ class image_recipe(models.Model):
         if attachment.url:  # make image url as /module_path/attachment_url and use it as filename
             path = '/'.join(get_module_path(attachment.url.split('/')[1]).split('/')[0:-1])
             return Image(filename=path + attachment.url)
+        _logger.warning('<<<<<<<<<<<<<< attachment_to_img >>>>>>>>>>>>>>>>: %s' % attachment.datas)
         return Image(StringIO(attachment.datas).decode('base64'))
 
     def data_to_img(self, data):  # return an image object while filename is data
-        _logger.warning('---------------: %s' % data)
+        _logger.warning('<<<<<<<<<<<<<< data_to_img >>>>>>>>>>>>>>>>: %s' % data)
         return Image(StringIO(data).decode('base64'))
 
     def url_to_img(self, url):  # return an image object while filename is an url
@@ -121,8 +122,10 @@ class image_recipe(models.Model):
     def send_file(self, http, attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         if field:
             o = self.env[model].browse(int(id))
+            _logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
             return http.send_file(StringIO(self.run(self.data_to_img(o.read()[0][field])).make_blob(format='jpg')), filename=field, mtime=self.get_mtime(o))
         if attachment:
+            _logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
             return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format='jpg')), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
         return http.send_file(self.run(self.url_to_img(url)), filename=url)
 
