@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+    <!-- watermark -->
+        <record id="im_watermark" model="image.recipe">
+            <field name="name">watermark</field>
+            <field name="recipe">image.watermark(Image(filename=watermark_img), transparency=0.0, left=(image.width-Image(filename=watermark_img).width)/2, top=(image.height-Image(filename=watermark_img).height)/2)
+image.strip()
+            </field>
+        </record>
+
+        <record id="im_watermark_param_one" model="image.recipe.param">
+            <field name="name">watermark_img</field>
+            <field name="value">/usr/share/odoo-addons/addons/web/static/src/img/nologo.png</field>
+            <field name="recipe_id" ref="im_watermark"/>
+        </record>
+    <!-- end of watermark -->
+
+    <!-- shop lit view -->
+        <record id="im_shop_list" model="image.recipe">
+            <field name="name">list_resize</field>
+            <field name="recipe">image.transform(resize=width+'x'+height+'>')
+            </field>
+        </record>
+
+        <record id="im_shop_list_param_one" model="image.recipe.param">
+            <field name="name">width</field>
+            <field name="value">100</field>
+            <field name="recipe_id" ref="im_shop_list"/>
+        </record>
+
+        <record id="im_shop_list_param_two" model="image.recipe.param">
+            <field name="name">height</field>
+            <field name="value">100</field>
+            <field name="recipe_id" ref="im_shop_list"/>
+        </record>
+    <!-- end of shop lit view -->
+
+    <!-- shop grid view -->
+        <record id="im_shop_grid" model="image.recipe">
+            <field name="name">grid_resize</field>
+            <field name="recipe">image.transform(resize=width+'x'+height+'>')
+            </field>
+        </record>
+
+        <record id="im_shop_grid_param_one" model="image.recipe.param">
+            <field name="name">width</field>
+            <field name="value">250</field>
+            <field name="recipe_id" ref="im_shop_grid"/>
+        </record>
+
+        <record id="im_shop_grid_param_two" model="image.recipe.param">
+            <field name="name">height</field>
+            <field name="value">250</field>
+            <field name="recipe_id" ref="im_shop_grid"/>
+        </record>
+    <!-- end of shop grid view -->
+
+    <!-- shop single view -->
+        <record id="im_shop_single" model="image.recipe">
+            <field name="name">single_resize</field>
+            <field name="recipe">image.transform(resize=width+'x'+height+'>')
+            </field>
+        </record>
+
+        <record id="im_shop_single_param_one" model="image.recipe.param">
+            <field name="name">width</field>
+            <field name="value">500</field>
+            <field name="recipe_id" ref="im_shop_single"/>
+        </record>
+
+        <record id="im_shop_single_param_two" model="image.recipe.param">
+            <field name="name">height</field>
+            <field name="value">500</field>
+            <field name="recipe_id" ref="im_shop_single"/>
+        </record>
+    <!-- end of shop single view -->
+
+    </data>
+</openerp>

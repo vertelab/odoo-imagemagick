@@ -91,8 +91,8 @@ class website_imagemagic(http.Controller):
             return self.placeholder(response)
 
 class website(models.Model):
-    _inherit = 'webiste'
-    
+    _inherit = 'website'
+
     #~ def _image_placeholder(self, response):
         #~ """
         #~ Choose placeholder.
@@ -104,16 +104,11 @@ class website(models.Model):
                 #~ mode='rb')) as f:
             #~ response.data = f.read()
             #~ return response.make_conditional(request.httprequest)
-    
+
     def imagemagick_url(self, record, field, recipe):
         """Returns a local url that points to the image field of a given browse record."""
-        model = record._name
-        sudo_record = record.sudo()
-        sudo_recipe = recipe.sudo()
-        id = '%s_%s' % (record.id, hashlib.sha1('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
-            sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest()[0:7])
-        return '/website/image/%s/%s/%s/%s' % (model, id, field, recipe.id)
-    
+        return '/imagefield/%s/%s/%s/ref/%s' % (record._name, field, record.sudo().id, recipe)
+
     # WIP. Very temporary solution.
     def imagemagick(self, model, id, field, recipe, response, cache=None):
         """ Fetches the requested field and applies the given imagemagick recipe on it.
@@ -132,9 +127,9 @@ class website(models.Model):
         The requested field is assumed to be base64-encoded image data in
         all cases.
         """
-        
+
         return recipe.send_file(http,field=field,model=model,id=id)
-        
+
         Model = self.pool[model]
         id = int(id)
 

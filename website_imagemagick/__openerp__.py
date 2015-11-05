@@ -31,7 +31,7 @@ Advanced Image handling
 """,
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
-    'depends': ['base'],
+    'depends': ['base', 'website'],
     'data': [ 'views/image_recipe.xml',
     ],
     'application': False,
