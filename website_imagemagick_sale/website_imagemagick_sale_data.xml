@@ -17,7 +17,7 @@ image.strip()
         </record>
     <!-- end of watermark -->
 
-    <!-- shop lit view -->
+    <!-- shop list view -->
         <record id="im_shop_list" model="image.recipe">
             <field name="name">list_resize</field>
             <field name="recipe">image.transform(resize=width+'x'+height+'>')
@@ -35,7 +35,7 @@ image.strip()
             <field name="value">100</field>
             <field name="recipe_id" ref="im_shop_list"/>
         </record>
-    <!-- end of shop lit view -->
+    <!-- end of shop list view -->
 
     <!-- shop grid view -->
         <record id="im_shop_grid" model="image.recipe">
