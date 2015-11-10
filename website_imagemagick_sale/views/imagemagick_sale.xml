@@ -2,9 +2,15 @@
 <openerp>
     <data>
 
-        <template id="products_item" inherit_id="website_sale.products_item" priority="99">
+        <template id="products_item" inherit_id="website_sale.products_item">
             <xpath expr="//img[@itemprop='image']" position="replace">
-                <img itemprop="image" class="img img-responsive" t-att-src="'/imagefield/product.template/image_medium/%s/id/2' % product.id" t-att-alt="product.name"/>
+                <img itemprop="image" class="img img-responsive" t-att-src="website.imagemagick_url(product, 'image', 'website_imagemagick_sale.im_shop_grid' if product_image_big else 'website_imagemagick_sale.im_shop_list')" t-att-alt="product.name"/>
+            </xpath>
+        </template>
+
+        <template id="product" inherit_id="website_sale.product">
+            <xpath expr="//span[@itemprop='image']" position="replace">
+                <img itemprop="image" class="img img-responsive" t-att-src="website.imagemagick_url(product, 'image', 'website_imagemagick_sale.im_shop_single')" t-att-alt="product.name"/>
             </xpath>
         </template>
 

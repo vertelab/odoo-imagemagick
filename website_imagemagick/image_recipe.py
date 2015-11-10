@@ -110,7 +110,7 @@ class website_imagemagic(http.Controller):
 
 class website(models.Model):
     _inherit = 'website'
-    
+
     #~ def _image_placeholder(self, response):
         #~ """
         #~ Choose placeholder.
@@ -149,7 +149,7 @@ class website(models.Model):
         The requested field is assumed to be base64-encoded image data in
         all cases.
         """
-        
+
         return recipe.send_file(http,field=field,model=model,id=id)
         
         record = self.env[model].browse(id)
