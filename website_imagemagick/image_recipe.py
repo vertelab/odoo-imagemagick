@@ -82,11 +82,6 @@ class website_imagemagic(http.Controller):
     def website_imagemagick(self, model, field, id, recipe=None):
         try:
             idsha = id.split('_')
-            value = None
-            if len(idsha) > 1:
-                value = cache.get(idsha[1])
-                if value is not None:
-                    return value
             id = idsha[0]
             response = werkzeug.wrappers.Response()
             return request.env['website']._imagemagick(
@@ -97,6 +92,18 @@ class website_imagemagic(http.Controller):
                              field, model, id, recipe.id)
             response = werkzeug.wrappers.Response()
             return self.placeholder(response)
+    """
+     class werkzeug.contrib.cache.FileSystemCache(cache_dir, threshold=500, default_timeout=300, mode=384)
+
+    A cache that stores the items on the file system. This cache depends on being the only user of the cache_dir. Make absolutely sure that nobody but this cache stores files there or otherwise the cache will randomly delete files therein.
+    Parameters:	
+
+        cache_dir – the directory where cache files are stored.
+        threshold – the maximum number of items the cache stores before it starts deleting some.
+        default_timeout – the default timeout that is used if no timeout is specified on set().
+        mode – the file mode wanted for the cache files, default 0600
+
+    """
     
     def placeholder(self, response):
         return request.env['website']._image_placeholder(response)
@@ -171,7 +178,7 @@ class website(models.Model):
             return self._image_placeholder(response)
 
         #TODO: Keep format of original image.
-        img = recipe.run(Image(blob=getattr(record, field).decode('base64'))).make_blob(format='jpg')
+        img = recipe.run(Image(blob=getattr(record, field).decode('base64'))).make_blob() #format='jpg')
         response.set_etag(hashlib.sha1(img).hexdigest())
         response.make_conditional(request.httprequest)
 
