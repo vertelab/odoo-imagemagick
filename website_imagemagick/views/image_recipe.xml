@@ -49,9 +49,16 @@
                         </h1>
                         <group>
                             <field name="recipe"/>
-                            <field name="param_ids"/>
                             <field name="website_published"/>
                         </group>
+                        <notebook>
+                            <page string="Description">
+                                <field name="description"/>
+                            </page>
+                            <page string="Parameters">
+                                <field name="param_ids"/>
+                            </page>
+                        </notebook>
                     </sheet>
                 </form>
             </field>
@@ -66,6 +73,7 @@
                 <tree>
                     <field name="name"/>
                     <field name="param_ids"/>
+                    <field name="website_published"/>
                 </tree>
             </field>
         </record>
@@ -82,8 +90,8 @@
                             <field name="name" placeholder="Image Recipe Parameter..." class="oe_inline"/>
                         </h1>
                         <group>
-                            <field name="recipe_id"/>
                             <field name="value"/>
+                            <field name="recipe_id"/>
                         </group>
                     </sheet>
                 </form>
@@ -98,12 +106,13 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="recipe_id"/>
                     <field name="value"/>
+                    <field name="recipe_id"/>
                 </tree>
             </field>
         </record>
 
+        <!-- recipe action window -->
         <record id="action_image_recipe_all_view" model="ir.actions.act_window">
             <field name="name">Image Recipe</field>
             <field name="res_model">image.recipe</field>
@@ -113,17 +122,7 @@
             <field name="context">{"search_default_current": 1}</field>
         </record>
 
-        <record id="action_image_recipe_param_all_view" model="ir.actions.act_window">
-            <field name="name">Image Recipe</field>
-            <field name="res_model">image.recipe.param</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="image_recipe_param_tree_view"/>
-            <field name="context">{"search_default_current": 1}</field>
-        </record>
-
         <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_config" sequence="100" action="action_image_recipe_all_view"/>
-        <menuitem id="menu_image_recipe_param_all_view" name="Image Recipe Param" parent="base.menu_config" sequence="101" action="action_image_recipe_param_all_view"/>
 
     </data>
 </openerp>

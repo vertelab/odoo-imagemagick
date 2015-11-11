@@ -220,6 +220,7 @@ class image_recipe(models.Model):
     recipe = fields.Text(string='Recipe')
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
     website_published =fields.Boolean(string="Published", default = True)
+    description = fields.Text(string="Description")
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 
