@@ -33,6 +33,7 @@ Advanced Image handling
     'website': 'http://www.vertel.se',
     'depends': ['base', 'website'],
     'data': [ 'views/image_recipe.xml',
+    'security/ir.model.access.csv'
     ],
     'application': False,
     'installable': True,

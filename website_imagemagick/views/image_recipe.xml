@@ -50,6 +50,7 @@
                         <group>
                             <field name="recipe"/>
                             <field name="param_ids"/>
+                            <field name="website_published"/>
                         </group>
                     </sheet>
                 </form>
@@ -123,7 +124,6 @@
 
         <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_config" sequence="100" action="action_image_recipe_all_view"/>
         <menuitem id="menu_image_recipe_param_all_view" name="Image Recipe Param" parent="base.menu_config" sequence="101" action="action_image_recipe_param_all_view"/>
-
 
     </data>
 </openerp>

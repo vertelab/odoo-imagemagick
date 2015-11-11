@@ -96,7 +96,7 @@ class website_imagemagic(http.Controller):
      class werkzeug.contrib.cache.FileSystemCache(cache_dir, threshold=500, default_timeout=300, mode=384)
 
     A cache that stores the items on the file system. This cache depends on being the only user of the cache_dir. Make absolutely sure that nobody but this cache stores files there or otherwise the cache will randomly delete files therein.
-    Parameters:	
+    Parameters:
 
         cache_dir – the directory where cache files are stored.
         threshold – the maximum number of items the cache stores before it starts deleting some.
@@ -104,7 +104,7 @@ class website_imagemagic(http.Controller):
         mode – the file mode wanted for the cache files, default 0600
 
     """
-    
+
     def placeholder(self, response):
         return request.env['website']._image_placeholder(response)
 
@@ -122,17 +122,17 @@ class website(models.Model):
                 #~ mode='rb')) as f:
             #~ response.data = f.read()
             #~ return response.make_conditional(request.httprequest)
-    
+
     @api.model
     def imagemagick_url(self, record, field, recipe):
         """Returns a local url that points to the image field of a given browse record."""
         model = record._name
         sudo_record = record.sudo()
-        sudo_recipe = recipe.sudo()
+        sudo_recipe = self.env.ref(recipe).sudo()
         id = '%s_%s' % (record.id, hashlib.sha1('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
             sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest())
-        return '/website/imagemagick/%s/%s/%s/%s' % (model, field, id, recipe.id)
-    
+        return '/website/imagemagick/%s/%s/%s/%s' % (model, field, id, sudo_recipe.id)
+
     # WIP. Very temporary solution.
     @api.model
     def _imagemagick(self, model, id, field, recipe, response, cache=None):
@@ -150,8 +150,13 @@ class website(models.Model):
         all cases.
         """
 
+        user = self.env['res.users'].browse(self._uid)
+        o = self.env[model].sudo().browse(int(id))
+        if 'website_published' in o.fields_get().keys() and o.website_published == True:
+            if user.has_group('base.group_website_publisher') or recipe.website_published == True:
+                return recipe.sudo().send_file(http,field=field,model=model,id=id)
         return recipe.send_file(http,field=field,model=model,id=id)
-        
+
         record = self.env[model].browse(id)
         if not len(record) > 0 and 'website_published' in record._fields:
             record = self.env[model].sudo().search(
@@ -198,22 +203,23 @@ class website(models.Model):
         response.headers['Content-Disposition'] = 'inline; filename="%s"' % filename
 
         response.data = data
-        
+
         return response
 
 class image_recipe(models.Model):
     _name = "image.recipe"
 
     test = fields.Binary(compute='compute_test')
-    
+
     def compute_test(self):
         import time
         time.sleep(5)
-    
+
     color = fields.Integer(string='Color Index')
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
+    website_published =fields.Boolean(string="Published", default = True)
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 
