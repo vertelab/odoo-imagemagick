@@ -48,12 +48,14 @@
                             <field name="name" placeholder="Image Recipe..." class="oe_inline"/>
                         </h1>
                         <group>
-                            <field name="recipe"/>
                             <field name="website_published"/>
                         </group>
                         <notebook>
                             <page string="Description">
                                 <field name="description"/>
+                            </page>
+                            <page string="Recipe">
+                                <field name="recipe"/>
                             </page>
                             <page string="Parameters">
                                 <field name="param_ids"/>
