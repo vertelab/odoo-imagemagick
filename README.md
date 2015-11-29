@@ -2,8 +2,8 @@
 advanced image management
 
 This module requied a python library called Wand. Install Wand to your machine by using:
-$ sudo apt-get install libmagickwand-dev
-$ sudo pip install Wand
+	$ sudo apt-get install libmagickwand-dev
+	$ sudo pip install Wand
 
 You need to specify recipes first in your database. By doing that, you can go to "Settings" -> "Configuration" -> "Image Recipe". You can find all Wand methods in http://docs.wand-py.org/en/0.4.1/index.html.
 
