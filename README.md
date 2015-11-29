@@ -24,6 +24,6 @@ And now you want to resize an employee image to that size by using this http rou
 
 This route takes 4 parameters which are "model name", "field name", "record id", "recipe id"
 
-In this case, you should get your first employee's image with maximum size 300px*300px by using url below:
+In this case, you should get your first employee's image to maximum size 300px*300px by using url below:
 
 http://localhost:8069/website/imagemagick/hr.employee/image/1/1
