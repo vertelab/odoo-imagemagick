@@ -14,7 +14,7 @@ You need to specify recipes first in your database. By doing that, you can go to
 The module includes a http controller class which can take 6 different urls and return the processed image with your recipe.
 
 
-Here's an example about how to specify a recipe and use it by controller:
+Here's an example of how to specify a recipe and use it by controller:
 
 You want to resize a photo to maximum size 300px*300px. Your recipe should like: image.transform(resize='300x300>'). Don't forget to publish your recipe after that.
 
