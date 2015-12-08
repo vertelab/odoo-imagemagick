@@ -219,8 +219,25 @@ class image_recipe(models.Model):
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
+    @api.one
+    def _params(self):
+        self.param_list = ','.join(self.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
+    param_list = fields.Char(compute=_params)
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
+    @api.model
+    def _image(self):
+        try:
+            url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
+            if not url:
+                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/library/flight.jpg')
+                url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
+            self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='jpg').encode('base64')
+        except:
+            pass
+    image = fields.Binary(compute=_image)
+    
+    
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 
@@ -228,11 +245,11 @@ class image_recipe(models.Model):
         if attachment.url:  # make image url as /module_path/attachment_url and use it as filename
             path = '/'.join(get_module_path(attachment.url.split('/')[1]).split('/')[0:-1])
             return Image(filename=path + attachment.url)
-        _logger.warning('<<<<<<<<<<<<<< attachment_to_img >>>>>>>>>>>>>>>>: %s' % attachment.datas)
+        #_logger.warning('<<<<<<<<<<<<<< attachment_to_img >>>>>>>>>>>>>>>>: %s' % attachment.datas)
         return Image(blob=attachment.datas.decode('base64'))
 
     def data_to_img(self, data):  # return an image object while filename is data
-        _logger.warning('<<<<<<<<<<<<<< data_to_img >>>>>>>>>>>>>>>>: %s' % data)
+        #_logger.warning('<<<<<<<<<<<<<< data_to_img >>>>>>>>>>>>>>>>: %s' % data)
         return Image(blob=data.decode('base64'))
 
     def url_to_img(self, url):  # return an image object while filename is an url
@@ -246,10 +263,10 @@ class image_recipe(models.Model):
     def send_file(self, http, attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         if field:
             o = self.env[model].browse(int(id))
-            _logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
+            #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
             return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field))).make_blob(format='jpg')), filename=field, mtime=self.get_mtime(o))
         if attachment:
-            _logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
+            #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
             return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format='jpg')), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
         return http.send_file(self.run(self.url_to_img(url)), filename=url)
 

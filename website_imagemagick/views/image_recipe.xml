@@ -26,7 +26,9 @@
                             </div>
                             <div class="oe_kanban_content">
                                 <div><b><field name="name"/></b></div>
-                                <div><field name="recipe"/></div>
+                                <div><field name="param_list"/></div>
+                                <a type="open"><img t-att-src="kanban_image('image.recipe', 'image', record.id.value)" style="max-width: 200px; max-height: 200px;"/></a>
+
                             </div>
                             <div class="oe_clear"></div>
                         </div>
@@ -47,9 +49,13 @@
                         <h1>
                             <field name="name" placeholder="Image Recipe..." class="oe_inline"/>
                         </h1>
-                        <group>
-                            <field name="website_published"/>
-                        </group>
+                          <div class="oe_left">
+                                    <field name="website_published"/>
+                                    <label for="website_published"/>
+                            </div>
+                            <group>
+                                <field name="image" widget="image" nolabel="1"/>
+                            </group>
                         <notebook>
                             <page string="Description">
                                 <field name="description"/>
@@ -58,7 +64,13 @@
                                 <field name="recipe"/>
                             </page>
                             <page string="Parameters">
-                                <field name="param_ids"/>
+                                <field name="param_ids" nolabel="1" widget="one2many_list" colspan="4">
+                    <tree editable="bottom" string="Parameters">
+                                        <field name="name"/>
+                                        <field name="value"/>
+                    </tree>
+                  </field>
+
                             </page>
                         </notebook>
                     </sheet>
@@ -74,7 +86,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="param_ids"/>
+                    <field name="param_list"/>
                     <field name="website_published"/>
                 </tree>
             </field>
@@ -120,7 +132,7 @@
             <field name="res_model">image.recipe</field>
             <field name="view_type">form</field>
             <field name="view_mode">kanban,tree,form</field>
-            <field name="view_id" ref="image_recipe_tree_view"/>
+            <field name="view_id" ref="image_recipe_kanban_view"/>
             <field name="context">{"search_default_current": 1}</field>
         </record>
 
