@@ -8,7 +8,7 @@
             <field name="model">image.recipe</field>
             <field name="type">kanban</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="recipe">
+                <kanban default_group_by="color">
                     <field name="color"/>
                     <field name="name"/>
                     <field name="recipe"/>
