@@ -124,11 +124,24 @@ class website(models.Model):
             #~ return response.make_conditional(request.httprequest)
 
     @api.model
-    def imagemagick_url(self, record, field, recipe):
-        """Returns a local url that points to the image field of a given browse record."""
+    def imagemagick_url(self, record, field, recipe, id=None):
+        """Returns a local url that points to the image field of a given browse record, run through an imagemagick recipe.
+           Record can be a record object, external id or model name (requires id to be given as well).
+           Recipe can be a record object, external id, or an id.
+        """
+        if type(record) is str:
+            if id:
+                record = self.env[record].browse(id)
+            else:
+                record = self.env.ref(record).sudo()
         model = record._name
         sudo_record = record.sudo()
-        sudo_recipe = self.env.ref(recipe).sudo()
+        if type(recipe) is str:
+            sudo_recipe = self.env.ref(recipe).sudo()
+        elif type(recipe) is int:
+            sudo_recipe = self.env['image.recipe'].browse(recipe).sudo()
+        else:
+            sudo_recipe = recipe.sudo()
         id = '%s_%s' % (record.id, hashlib.sha1('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
             sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest())
         return '/website/imagemagick/%s/%s/%s/%s' % (model, field, id, sudo_recipe.id)
