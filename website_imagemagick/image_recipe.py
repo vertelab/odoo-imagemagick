@@ -37,6 +37,7 @@ from openerp.tools.safe_eval import safe_eval as eval
 from wand.image import Image
 from wand.display import display
 from wand.drawing import Drawing
+from wand.color import Color
 import subprocess
 
 import logging
