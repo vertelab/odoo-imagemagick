@@ -166,6 +166,8 @@ class website(models.Model):
 
         user = self.env['res.users'].browse(self._uid)
         o = self.env[model].sudo().browse(int(id))
+        if o.check_access_rights('read', raise_exception=False):
+            return recipe.sudo().send_file(http,field=field,model=model,id=id)
         if 'website_published' in o.fields_get().keys() and o.website_published == True:
             if user.has_group('base.group_website_publisher') or recipe.website_published == True:
                 return recipe.sudo().send_file(http,field=field,model=model,id=id)
@@ -244,14 +246,14 @@ class image_recipe(models.Model):
         try:
             url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
             if not url:
-                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/library/flight.jpg')
+                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/fields.jpg')
                 url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
             self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='jpg').encode('base64')
         except:
             pass
     image = fields.Binary(compute=_image)
-    
-    
+
+
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 
