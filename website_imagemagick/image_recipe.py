@@ -37,6 +37,7 @@ from openerp.tools.safe_eval import safe_eval as eval
 from wand.image import Image
 from wand.display import display
 from wand.drawing import Drawing
+from wand.color import Color
 import subprocess
 
 import logging
@@ -124,11 +125,24 @@ class website(models.Model):
             #~ return response.make_conditional(request.httprequest)
 
     @api.model
-    def imagemagick_url(self, record, field, recipe):
-        """Returns a local url that points to the image field of a given browse record."""
+    def imagemagick_url(self, record, field, recipe, id=None):
+        """Returns a local url that points to the image field of a given browse record, run through an imagemagick recipe.
+           Record can be a record object, external id or model name (requires id to be given as well).
+           Recipe can be a record object, external id, or an id.
+        """
+        if type(record) is str:
+            if id:
+                record = self.env[record].browse(id)
+            else:
+                record = self.env.ref(record).sudo()
         model = record._name
         sudo_record = record.sudo()
-        sudo_recipe = self.env.ref(recipe).sudo()
+        if type(recipe) is str:
+            sudo_recipe = self.env.ref(recipe).sudo()
+        elif type(recipe) is int:
+            sudo_recipe = self.env['image.recipe'].browse(recipe).sudo()
+        else:
+            sudo_recipe = recipe.sudo()
         id = '%s_%s' % (record.id, hashlib.sha1('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
             sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest())
         return '/website/imagemagick/%s/%s/%s/%s' % (model, field, id, sudo_recipe.id)
@@ -152,6 +166,8 @@ class website(models.Model):
 
         user = self.env['res.users'].browse(self._uid)
         o = self.env[model].sudo().browse(int(id))
+        if o.check_access_rights('read', raise_exception=False):
+            return recipe.sudo().send_file(http,field=field,model=model,id=id)
         if 'website_published' in o.fields_get().keys() and o.website_published == True:
             if user.has_group('base.group_website_publisher') or recipe.website_published == True:
                 return recipe.sudo().send_file(http,field=field,model=model,id=id)
@@ -230,14 +246,14 @@ class image_recipe(models.Model):
         try:
             url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
             if not url:
-                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/library/flight.jpg')
+                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/fields.jpg')
                 url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
             self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='jpg').encode('base64')
         except:
             pass
     image = fields.Binary(compute=_image)
-    
-    
+
+
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 

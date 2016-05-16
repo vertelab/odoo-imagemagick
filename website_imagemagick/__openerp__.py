@@ -36,6 +36,7 @@ Advanced Image handling
         'python': ['wand', ],
     },
     'data': [ 'views/image_recipe.xml',
+    'website_imagemagick_data.xml',
     'security/ir.model.access.csv'
     ],
     'application': False,

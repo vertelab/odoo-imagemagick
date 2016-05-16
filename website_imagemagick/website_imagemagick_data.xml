@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+    <!-- carousel image -->
+        <record id="im_carousel_img" model="image.recipe">
+            <field name="name">Carousel</field>
+            <field name="recipe">image.transform(resize=width+'x'+'>')
+image.crop(int(left), int(top), image.width, int(bottom))
+            </field>
+            <field name="description">Resize the image suitable for use in a carousel.
+&lt;div class="carousel-img col-md-12" style="padding: 0px;"&gt;
+    &lt;img alt="Banner Odoo Image" class="img-responsive" src="/website/imagemagick/&lt;model&gt;/&lt;field&gt;/&lt;id&gt;/&lt;model("image.recipe"):recipe&gt;" style="width: auto; height: auto;"/&gt;
+&lt;/div&gt;</field>
+        </record>
+
+        <record id="im_carousel_img_param_width" model="image.recipe.param">
+            <field name="name">width</field>
+            <field name="value">1170</field>
+            <field name="recipe_id" ref="im_carousel_img"/>
+        </record>
+        <record id="im_carousel_img_param_left" model="image.recipe.param">
+            <field name="name">left</field>
+            <field name="value">0</field>
+            <field name="recipe_id" ref="im_carousel_img"/>
+        </record>
+        <record id="im_carousel_img_param_top" model="image.recipe.param">
+            <field name="name">top</field>
+            <field name="value">0</field>
+            <field name="recipe_id" ref="im_carousel_img"/>
+        </record>
+        <record id="im_carousel_img_param_bottom" model="image.recipe.param">
+            <field name="name">bottom</field>
+            <field name="value">730</field>
+            <field name="recipe_id" ref="im_carousel_img"/>
+        </record>
+    <!-- end of carousel image -->
+
+    </data>
+</openerp>
