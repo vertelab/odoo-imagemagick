@@ -32,6 +32,9 @@ Advanced Image handling
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
     'depends': ['base', 'website'],
+    'external_dependencies': {
+        'python': ['wand', ],
+    },
     'data': [ 'views/image_recipe.xml',
     'security/ir.model.access.csv'
     ],
