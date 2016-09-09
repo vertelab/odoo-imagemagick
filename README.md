@@ -9,7 +9,7 @@ This module requied a python library called Wand. Install Wand to your machine b
 
 
 You need to specify recipes first in your database. By doing that, you can go to "Settings" -> "Configuration" -> "Image Recipe". You can find all Wand methods in http://docs.wand-py.org/en/0.4.1/index.html.
-
+And wand document in https://media.readthedocs.org/pdf/wand/0.3-maintenance/wand.pdf
 
 The module includes a http controller class which can take 6 different urls and return the processed image with your recipe.
 
