@@ -78,6 +78,18 @@ class website_imagemagic(http.Controller):
         return recipe.send_file(http,field=field,model=model,id=id)
 
     @http.route([
+        '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
+        '/imagefieldurl/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
+        ], type='http', auth="public", website=True, multilang=False)
+    def website_url(self, model, id, field, recipe=None,recipe_ref=None):
+        if recipe_ref:
+            recipe = request.env.ref(recipe_ref)
+        o = request.env[model].browse(int(id))
+        url = getattr(o, field).strip()
+        attachment_id = int(url.split('/')[6].split('_')[0])
+        return recipe.send_file(http,field='datas',model='ir.attachment',id=attachment_id)
+
+    @http.route([
         '/website/imagemagick/<model>/<field>/<id>/<model("image.recipe"):recipe>',
         ], type='http', auth="public", website=True, multilang=False)
     def website_imagemagick(self, model, field, id, recipe=None):
@@ -295,6 +307,7 @@ class image_recipe(models.Model):
             'time': time,
             'Image': Image,
             'image': image,
+            '_logger': _logger,
             'user': self.env['res.users'].browse(self._uid),
             })
         eval(self.recipe, kwargs, mode='exec', nocopy=True)
