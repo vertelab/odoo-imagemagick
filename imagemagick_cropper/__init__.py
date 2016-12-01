@@ -1,0 +1,1 @@
+import imagemagick_cropper
