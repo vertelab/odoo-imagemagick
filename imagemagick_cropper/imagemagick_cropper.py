@@ -31,23 +31,24 @@ _logger = logging.getLogger(__name__)
 
 class imagemagickCropper(http.Controller):
 
-    @http.route(['/imagemagick/cropper'], type='http', auth="public", website=True)
-    def imagemagick_cropper(self, **post):
-        return request.website.render('imagemagick_cropper.imagemagick_cropper', {})
+    @http.route(['/imagemagick/cropper', '/imagemagick/<model("ir.attachment"):image>/cropper'], type='http', auth="public", website=True)
+    def imagemagick_cropper(self, image=None, **post):
+        return request.website.render('imagemagick_cropper.imagemagick_cropper', {'image': image})
 
     @http.route(['/magick_crop'], type='json', methods=['POST'], website=True)
     def magick_crop(self, image_url=None, dataX=0, dataY=0, dataWidth=0, dataHeight=0, dataRotate=0, dataScaleX=1, dataScaleY=1, **kw):
         if 'ir.attachment' in image_url:
             # binary -> decode -> wand.image -> imagemagick -> make_blob() -> encode -> binary
             img_attachment = request.env['ir.attachment'].browse(int(image_url.split('/')[4].split('_')[0]))
+            _logger.warn(img_attachment.datas)
             wand_img = Image(blob=getattr(img_attachment, 'datas').decode('base64'))
             try:
                 wand_img.crop(int(dataX), int(dataY), width=int(dataWidth), height=int(dataHeight))
-                wand_img.resize(int(wand_img.width * float(dataScaleX)), int(wand_img.height * float(dataScaleY)))
-                wand_img.rotate(int(dataRotate))
-                img_attachment.write({
-                    'datas': wand_img.make_blob().encode('base64'),
-                })
+                if dataScaleX and dataScaleY:
+                    wand_img.resize(int(wand_img.width * float(dataScaleX)), int(wand_img.height * float(dataScaleY)))
+                if dataRotate:
+                    wand_img.rotate(int(dataRotate))
+                img_attachment.write({ 'datas': wand_img.make_blob().encode('base64') })
             except Exception as e:
                 return ': '.join(e)
         else:

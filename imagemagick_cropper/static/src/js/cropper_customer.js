@@ -10,7 +10,7 @@ function magick_crop(){
         'dataScaleY': $("#dataScaleY").val(),
     }).done(function(data){
         if(data === 'Magic Crop Completed!')
-            $("#img-canvas").load(document.URL + " #img-canvas");
+            location.reload();
     });
 }
 
