@@ -37,6 +37,7 @@ class imagemagickCropper(http.Controller):
 
     @http.route(['/magick_crop'], type='json', methods=['POST'], website=True)
     def magick_crop(self, image_url=None, dataX=0, dataY=0, dataWidth=0, dataHeight=0, dataRotate=0, dataScaleX=1, dataScaleY=1, **kw):
+        _logger.warn(image_url)
         if 'ir.attachment' in image_url:
             # binary -> decode -> wand.image -> imagemagick -> make_blob() -> encode -> binary
             img_attachment = request.env['ir.attachment'].browse(int(image_url.split('/')[4].split('_')[0]))
@@ -51,6 +52,6 @@ class imagemagickCropper(http.Controller):
                 img_attachment.write({ 'datas': wand_img.make_blob().encode('base64') })
             except Exception as e:
                 return ': '.join(e)
+            return 'Magic Crop Completed!'
         else:
-            return 'Please using attachment url!'
-        return 'Magic Crop Completed!'
+            return 'Please using attachment as image!'
