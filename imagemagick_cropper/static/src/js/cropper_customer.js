@@ -9,10 +9,10 @@ function magick_crop(){
         'dataScaleX': $("#dataScaleX").val(),
         'dataScaleY': $("#dataScaleY").val(),
     }).then(function(data){
-        if(data === 'Magic Crop Completed!'){
+        //~ if(data === 'Magic Crop Completed!'){
             console.log('from function 1 ' + data);
             location.reload();
-        }
+        //~ }
     }, function(data) {
             console.log('from function 2 ' + data);
             location.reload();
