@@ -11,8 +11,6 @@ function magick_crop(){
     }).done(function(data){
         if(data === 'Magic Crop Completed!')
             location.reload();
-        else
-            window.alert(data);
     });
 }
 
