@@ -50,6 +50,6 @@ class imagemagickCropper(http.Controller):
                 img_attachment.write({ 'datas': wand_img.make_blob().encode('base64') })
             except Exception as e:
                 return ': '.join(e)
-            return 'Magic Crop Completed!'
         else:
             return 'Please using attachment as image!'
+        return 'Magic Crop Completed!'
