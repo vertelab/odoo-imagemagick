@@ -8,10 +8,16 @@ function magick_crop(){
         'dataRotate': $("#dataRotate").val(),
         'dataScaleX': $("#dataScaleX").val(),
         'dataScaleY': $("#dataScaleY").val(),
-    }).done(function(data){
-        if(data === 'Magic Crop Completed!')
+    }).then(function(data){
+        if(data === 'Magic Crop Completed!'){
+            console.log('from function 1 ' + data);
             location.reload();
-    });
+        }
+    }, function(data) {
+            console.log('from function 2 ' + data);
+            location.reload();
+        }
+    );
 }
 
 
