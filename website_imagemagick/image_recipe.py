@@ -305,6 +305,7 @@ class image_recipe(models.Model):
         import time
         bg = Image() #create a background image
         bg.blank(width=image.width, height=image.height, background=Color('#ffffff'))
+        bg.format = 'png'
         bg.composite(image, 0, 0)
         kwargs.update({
             'time': time,
