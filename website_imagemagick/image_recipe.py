@@ -303,19 +303,19 @@ class image_recipe(models.Model):
         kwargs.update({p.name: p.value for p in self.param_ids})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
-        img_cp = image.clone()
-        image = Image(width=img_cp.width, height=img_cp.height, background=Color('#ffffff'))
-        image.composite(img_cp, 0, 0)
+        bg = Image() #create a background image
+        bg.blank(width=image.width, height=image.height, background=Color('#ffffff'))
+        bg.composite(image, 0, 0)
         kwargs.update({
             'time': time,
             'Image': Image,
-            'image': image,
+            'image': bg,
             'Color': Color,
             '_logger': _logger,
             'user': self.env['res.users'].browse(self._uid),
             })
         eval(self.recipe, kwargs, mode='exec', nocopy=True)
-        return image
+        return bg
 
 class image_recipe_param(models.Model):
     _name = "image.recipe.param"
