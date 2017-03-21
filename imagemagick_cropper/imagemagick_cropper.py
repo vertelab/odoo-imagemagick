@@ -23,8 +23,10 @@ from openerp import http
 from openerp.http import request
 import base64
 from cStringIO import StringIO
-from wand.image import Image
-
+try:
+    from wand.image import Image
+except:
+    pass
 
 import logging
 _logger = logging.getLogger(__name__)

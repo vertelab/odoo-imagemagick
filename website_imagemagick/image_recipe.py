@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2015 Vertel AB (<http://vertel.se>).
+#    Copyright (C) 2004-2017 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -31,8 +31,10 @@ import werkzeug
 import pytz
 import re
 import hashlib
+import sys
+import traceback
 
-from openerp.tools.safe_eval import safe_eval as eval
+from .safeish_eval import safe_eval as eval
 
 from wand.image import Image
 from wand.display import display
@@ -175,7 +177,7 @@ class website(models.Model):
         The requested field is assumed to be base64-encoded image data in
         all cases.
         """
-
+        _logger.warn('\n\n\nfoobar')
         user = self.env['res.users'].browse(self._uid)
         o = self.env[model].sudo().browse(int(id))
         if o.check_access_rights('read', raise_exception=False):
@@ -260,9 +262,11 @@ class image_recipe(models.Model):
             if not url:
                 self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/fields.jpg')
                 url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
-            self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='jpg').encode('base64')
+            self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png').encode('base64')
         except:
-            pass
+            e = sys.exc_info()
+            message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
+            _logger.error(message)
     image = fields.Binary(compute=_image)
 
 
@@ -292,10 +296,10 @@ class image_recipe(models.Model):
         if field:
             o = self.env[model].browse(int(id))
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
-            return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field))).make_blob(format='jpg')), filename=field, mtime=self.get_mtime(o))
+            return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format='png')), filename=field, mtime=self.get_mtime(o))
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
-            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format='jpg')), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format='png')), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
         return http.send_file(self.run(self.url_to_img(url)), filename=url)
 
 
@@ -303,20 +307,20 @@ class image_recipe(models.Model):
         kwargs.update({p.name: p.value for p in self.param_ids})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
-        bg = Image() #create a background image
-        bg.blank(width=image.width, height=image.height, background=Color('#ffffff'))
-        bg.format = 'png'
-        bg.composite(image, 0, 0)
         kwargs.update({
             'time': time,
             'Image': Image,
-            'image': bg,
             'Color': Color,
+            'display': display,
+            'Drawing': Drawing,
+            'image': image,
             '_logger': _logger,
             'user': self.env['res.users'].browse(self._uid),
             })
         eval(self.recipe, kwargs, mode='exec', nocopy=True)
-        return bg
+        if 'res' in kwargs:
+            image = kwargs['res']
+        return image
 
 class image_recipe_param(models.Model):
     _name = "image.recipe.param"
@@ -324,3 +328,15 @@ class image_recipe_param(models.Model):
     name = fields.Char(string='Name')
     value = fields.Char(string='Value')
     recipe_id = fields.Many2one(comodel_name='image.recipe', string='Recipe')
+    #~ type = fields.Selection([('string', 'String'), ('float', 'Float'), ('int', 'Integer'), ('', '')], default='string')
+    
+    #~ @api.multi
+    #~ def get_value(self):
+        #~ if not self.type or self.type == string:
+            #~ #Keep current recipes working
+            #~ return value
+        #~ elif self.type == 'float':
+            #~ return float(self.value)
+        #~ elif self.type == 'int':
+            #~ return int(self.value)
+            
