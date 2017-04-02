@@ -50,7 +50,9 @@
                             <field name="name" placeholder="Image Recipe..." class="oe_inline"/>
                         </h1>
                         <group>
-                            <field name="external_id"/>
+                            <group>
+                                <field name="external_id"/>
+                            </group>
                             <button type="object" name="get_external_id" class="oe_highlight" string="Get External ID"/>
                         </group>
                           <div class="oe_left">
