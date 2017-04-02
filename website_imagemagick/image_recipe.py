@@ -255,6 +255,7 @@ class image_recipe(models.Model):
     param_list = fields.Char(compute=_params)
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
+    external_id = fields.Char(string='External ID')
     @api.model
     def _image(self):
         try:
@@ -268,6 +269,23 @@ class image_recipe(models.Model):
             message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
             _logger.error(message)
     image = fields.Binary(compute=_image)
+    @api.multi
+    def get_external_id(self):
+        external_id = self.env['ir.model.data'].search([('model', '=', 'image.recipe'), ('res_id', '=', self.id)])
+        if not external_id:
+            try:
+                external_id = self.env['ir.model.data'].create({
+                    'name': '_'.join((self.name.lower()).split(' ')),
+                    'module': 'website_imagemagick',
+                    'model': 'image.recipe',
+                    'res_id': self.id,
+                })
+                self.external_id = external_id.complete_name
+            except:
+                e = sys.exc_info()
+                raise Warning('\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
+        else:
+            self.external_id = external_id.complete_name
 
 
 
@@ -329,7 +347,7 @@ class image_recipe_param(models.Model):
     value = fields.Char(string='Value')
     recipe_id = fields.Many2one(comodel_name='image.recipe', string='Recipe')
     #~ type = fields.Selection([('string', 'String'), ('float', 'Float'), ('int', 'Integer'), ('', '')], default='string')
-    
+
     #~ @api.multi
     #~ def get_value(self):
         #~ if not self.type or self.type == string:
@@ -339,4 +357,4 @@ class image_recipe_param(models.Model):
             #~ return float(self.value)
         #~ elif self.type == 'int':
             #~ return int(self.value)
-            
+

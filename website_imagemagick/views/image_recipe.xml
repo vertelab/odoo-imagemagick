@@ -49,6 +49,10 @@
                         <h1>
                             <field name="name" placeholder="Image Recipe..." class="oe_inline"/>
                         </h1>
+                        <group>
+                            <field name="external_id"/>
+                            <button type="object" name="get_external_id" class="oe_highlight" string="Get External ID"/>
+                        </group>
                           <div class="oe_left">
                                     <field name="website_published"/>
                                     <label for="website_published"/>
