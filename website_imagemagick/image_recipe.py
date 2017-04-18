@@ -300,7 +300,9 @@ class image_recipe(models.Model):
 
     def data_to_img(self, data):  # return an image object while filename is data
         #_logger.warning('<<<<<<<<<<<<<< data_to_img >>>>>>>>>>>>>>>>: %s' % data)
-        return Image(blob=data.decode('base64'))
+        if data:
+            return Image(blob=data.decode('base64'))
+        return Image(filename='/'.join(get_module_path('/web/static/src/img/foo.png'.split('/')[1]).split('/')[0:-1]) + '/web/static/src/img/placeholder.png')
 
     def url_to_img(self, url):  # return an image object while filename is an url
         return Image(filename=url)
