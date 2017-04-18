@@ -77,7 +77,7 @@ class website_imagemagic(http.Controller):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
         #~ recipe.send_file(http,field=field,model=model,id=id.split('_')[0])
-        return recipe.send_file(http,field=field,model=model,id=id)
+        return recipe.sudo().send_file(http,field=field,model=model,id=id)
 
     @http.route([
         '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
@@ -314,7 +314,7 @@ class image_recipe(models.Model):
 
     def send_file(self, http, attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         if field:
-            o = self.env[model].browse(int(id))
+            o = self.env[model].sudo().browse(int(id))
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
             return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format='png')), filename=field, mtime=self.get_mtime(o))
         if attachment:
