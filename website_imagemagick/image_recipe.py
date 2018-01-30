@@ -324,7 +324,7 @@ class image_recipe(models.Model):
 
 
     def run(self, image, **kwargs):   # return a image with specified recipe
-        kwargs.update({p.name: p.value for p in self.param_ids})    #get parameters from recipe
+        kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type and p.device_type == request.session.get('device_type','md') else True})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
         kwargs.update({
@@ -343,9 +343,21 @@ class image_recipe(models.Model):
         return image
 
 class image_recipe_param(models.Model):
+    """
+   Device Type == Extra small devices    Small devices       Medium devices      Large devices 
+                   Phones (<768px)        Tablets (≥768px)    Desktops (≥992px)   Desktops (≥1200px)
+   column ca       auto                    	~62px                	~81px            ~97px
+   gutter 15+15 px
+   
+   device_type is saved in session by a javascript / json-controller
+   
+    """
     _name = "image.recipe.param"
 
+
+
     name = fields.Char(string='Name')
+    device_type = fields.Selection([('xs','Extra Small'),('sm','Small'),('md','Medium'),('lg','Large'),('','None')],string='Device Type',default='')
     value = fields.Char(string='Value')
     recipe_id = fields.Many2one(comodel_name='image.recipe', string='Recipe')
     #~ type = fields.Selection([('string', 'String'), ('float', 'Float'), ('int', 'Integer'), ('', '')], default='string')

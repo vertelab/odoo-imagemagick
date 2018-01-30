@@ -73,6 +73,7 @@
                                 <field name="param_ids" nolabel="1" widget="one2many_list" colspan="4">
                     <tree editable="bottom" string="Parameters">
                                         <field name="name"/>
+                                        <field name="device_type"/>
                                         <field name="value"/>
                     </tree>
                   </field>
@@ -111,6 +112,7 @@
                         </h1>
                         <group>
                             <field name="value"/>
+                            <field name="device_type"/>
                             <field name="recipe_id"/>
                         </group>
                     </sheet>
@@ -126,6 +128,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="device_type"/>
                     <field name="value"/>
                     <field name="recipe_id"/>
                 </tree>
