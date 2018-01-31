@@ -324,7 +324,8 @@ class image_recipe(models.Model):
 
 
     def run(self, image, **kwargs):   # return a image with specified recipe
-        kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type and p.device_type == request.session.get('device_type','md') else True})    #get parameters from recipe
+        kwargs.update({p.name: p.value for p in self.param_ids})
+        kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
         kwargs.update({
@@ -342,15 +343,31 @@ class image_recipe(models.Model):
             image = kwargs['res']
         return image
 
+
+class set_device_type(http.Controller):
+
+    @http.route(['/set_device_type'], type='json', auth='public', website=True)
+    def set_device_type(self, width=992, **kw):
+        if width < 768:
+            request.session['device_type'] = 'xs'
+        elif width >= 768 and width < 992:
+            request.session['device_type'] = 'sm'
+        elif width >= 992 and width < 1200:
+            request.session['device_type'] = 'md'
+        else:
+            request.session['device_type'] = 'lg'
+        _logger.warn('Device type: %s' %request.session.get('device_type'))
+
+
 class image_recipe_param(models.Model):
     """
-   Device Type == Extra small devices    Small devices       Medium devices      Large devices 
+   Device Type == Extra small devices    Small devices       Medium devices      Large devices
                    Phones (<768px)        Tablets (≥768px)    Desktops (≥992px)   Desktops (≥1200px)
-   column ca       auto                    	~62px                	~81px            ~97px
+   column ca       auto                     ~62px                   ~81px            ~97px
    gutter 15+15 px
-   
+
    device_type is saved in session by a javascript / json-controller
-   
+
     """
     _name = "image.recipe.param"
 

@@ -148,4 +148,16 @@
         <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_config" sequence="100" action="action_image_recipe_all_view"/>
 
     </data>
+    <data>
+        <template id="assets_frontend" inherit_id="website.assets_frontend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript">
+                    openerp.jsonRpc("/set_device_type", "call", {
+                        width: $(window).width()
+                    }).done(function(data){
+                    });
+                </script>
+            </xpath>
+        </template>
+    </data>
 </openerp>
