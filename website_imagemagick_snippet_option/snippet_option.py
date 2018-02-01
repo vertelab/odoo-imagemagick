@@ -22,6 +22,7 @@ from openerp.exceptions import except_orm, Warning, RedirectWarning
 from openerp import models, fields, api, _
 from openerp import http
 from openerp.http import request
+import re
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -29,8 +30,12 @@ _logger = logging.getLogger(__name__)
 class snippet_option(http.Controller):
 
     @http.route(['/website_imagemagick_snippet_options'], type='json', auth="public", website=True)
-    def website_imagemagick_snippet_options(self, attachment_id, recipe_id, **kw):
+    def website_imagemagick_snippet_options(self, img_src, recipe_id, **kw):
+        if '/website/image/ir.attachment/' in img_src:
+            attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
+        elif '/imagefield/ir.attachment/datas/' in img_src:
+            attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id', img_src).group(1)
+        else:
+            attachment_id = 0
         attachment = request.env['ir.attachment'].browse(int(attachment_id))
-        recipe = request.env['image.recipe'].browse(int(recipe_id))
-        _logger.warn('/imagefield/ir.attachment/image/%s/ref/%s' %(attachment.id, recipe.id))
-        return '/imagefield/ir.attachment/image/%s/ref/%s' %(attachment.id, recipe.id)
+        return '/imagefield/ir.attachment/datas/%s/id/%s' %(attachment.id, recipe_id)

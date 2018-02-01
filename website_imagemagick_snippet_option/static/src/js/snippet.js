@@ -1,9 +1,12 @@
 var website = openerp.website;
+var img_src = ''; // img src
+var current_taget = null;
 
 website.snippet.options.transform = website.snippet.Option.extend({
     start: function () {
         var self = this;
         this._super();
+        current_taget = self.$target;
 
         this.$el.find(".clear-style").click(function (event) {
             self.$target.removeClass("fa-spin").attr("style", "");
@@ -21,36 +24,16 @@ website.snippet.options.transform = website.snippet.Option.extend({
             .on("mousedown", function () {
                 self.$target.transfo("hide");
             });
-
-        //~ $(".choose_recipe").click(function(){
-        //~ console.log($(this));
-        //~ openerp.jsonRpc("/website_imagemagick_snippet_options", "call", {
-        //~ }).done(function(data){
-            //~ var blog_content = '';
-            //~ i = 0;
-            //~ $.each(data, function(key, info) {
-                //~ var content = openerp.qweb.render('blog_banner_content', {
-                    //~ 'item_content': i == 0 ? "item active" : "item",
-                    //~ 'blog_name': data[key]['name'],
-                    //~ 'background_image': data[key]['background_image'],
-                //~ });
-                //~ blog_content += content;
-                //~ i ++;
-            //~ });
-            //~ self.$target.find(".blog_banner_content").html(blog_content);
-        //~ });
-    //~ });
-
     },
     resetTransfo: function () {
         var self = this;
         this.$target.transfo("destroy");
-        var src = this.$target[0]["src"];
-        if (!~src.indexOf("/website/static/src/")) {
-            if (~src.indexOf("/ir.attachment/")) {
-                console.log(src.match(/ir.attachment\/(.*?)\//i)[1].split("_")[0]);
-            }
-        }
+        img_src = this.$target[0]["src"];
+        //~ if (!~src.indexOf("/website/static/src/")) {
+            //~ if (~src.indexOf("/ir.attachment/")) {
+                //~ attachment_id = src.match(/ir.attachment\/(.*?)\//i)[1].split("_")[0];
+            //~ }
+        //~ }
         this.$target.transfo({
             hide: true,
             callback: function () {
@@ -82,7 +65,6 @@ website.snippet.options.transform = website.snippet.Option.extend({
         var $active = this.$el.find('li[data-value]')
             .filter(function () {
                 var $li = $(this);
-                console.log($li);
                 return  ($li.data('value') && self.$target.hasClass($li.data('value')));
             })
             .first()
@@ -91,13 +73,23 @@ website.snippet.options.transform = website.snippet.Option.extend({
     },
     select: function (np) {
         var self = this;
-        console.log(self);
         // add or remove html class
         if (np.$prev && this.required) {
             this.$target.removeClass(np.$prev.data('value' || ""));
         }
         if (np.$next) {
-            this.$target.addClass(np.$next.data('value') || "");
+            if (np.$next.hasClass("choose_recipe")) {
+                openerp.jsonRpc("/website_imagemagick_snippet_options", "call", {
+                    "img_src": img_src,
+                    "recipe_id": np.$next.data('value')
+                }).done(function(data){
+                    current_taget.attr("data-cke-saved-src", data);
+                    current_taget.attr("src", data);
+                });
+            }
+            else {
+                this.$target.addClass(np.$next.data('value') || "");
+            }
         }
     }
 });
