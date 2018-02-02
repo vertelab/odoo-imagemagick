@@ -147,11 +147,11 @@ class website_imagemagic(http.Controller):
     @http.route(['/website_imagemagick_recipe_change'], type='json', auth="public", website=True)
     def website_imagemagick_recipe_change(self, img_src, recipe_id, **kw):
         if '/website/image/ir.attachment/' in img_src:
-            attachment_id = re.search('/website/image/ir.attachment/(.*)/datas/', img_src).group(1).split('_')[0]
+            attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
         elif '/imagefield/ir.attachment/datas/' in img_src:
-            attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id/', img_src).group(1)
+            attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id', img_src).group(1)
         elif '/imagemagick/' in img_src:
-            attachment_id = re.search('/imagemagick/(.*)/id/', img_src).group(1)
+            attachment_id = re.search('/imagemagick/(.*)/id', img_src).group(1)
             attachment = request.env['ir.attachment'].browse(int(attachment_id))
             return '/imagemagick/%s/id/%s' %(attachment.id, recipe_id)
         else:
