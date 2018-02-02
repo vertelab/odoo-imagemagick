@@ -13,10 +13,10 @@ image.crop(int(left), int(top), image.width, int(bottom))
     &lt;img alt="Banner Odoo Image" class="img-responsive" src="/website/imagemagick/&lt;model&gt;/&lt;field&gt;/&lt;id&gt;/&lt;model("image.recipe"):recipe&gt;" style="width: auto; height: auto;"/&gt;
 &lt;/div&gt;</field>
         </record>
-
-        <record id="im_carousel_img_param_width" model="image.recipe.param">
+        <record id="im_carousel_img_param_width_lg" model="image.recipe.param">
             <field name="name">width</field>
             <field name="value">1170</field>
+            <field name="device_type">lg</field>
             <field name="recipe_id" ref="im_carousel_img"/>
         </record>
         <record id="im_carousel_img_param_left" model="image.recipe.param">
@@ -36,5 +36,250 @@ image.crop(int(left), int(top), image.width, int(bottom))
         </record>
     <!-- end of carousel image -->
 
+    <!-- recipe square aspect ratio 1:1 -->
+        <record id="img_square_thumnail" model="image.recipe">
+            <field name="name">Square (Thumbnail)</field>
+            <field name="description">Define the canvas size to limit the image maximum size.
+Define the background color with hex.
+</field>
+            <field name="recipe">bg = Image()
+bg.blank(width=int(canvas_size), height=int(canvas_size), background=Color(bg_color))
+bg.format = 'png'
+image.transform(resize='%sx%s' %(int(canvas_size), int(canvas_size)))
+bg.composite(image, (int(canvas_size)-image.width)/2, (int(canvas_size)-image.height)/2)
+res = bg
+            </field>
+        </record>
+        <record id="img_square_thumnail_param_canvas_size_xs" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">345</field>
+            <field name="device_type">xs</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail"/>
+        </record>
+        <record id="img_square_thumnail_param_canvas_size_sm" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">345</field>
+            <field name="device_type">sm</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail"/>
+        </record>
+        <record id="img_square_thumnail_param_canvas_size_md" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">360</field>
+            <field name="device_type">md</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail"/>
+        </record>
+        <record id="img_square_thumnail_param_canvas_size_lg" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">360</field>
+            <field name="device_type">lg</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail"/>
+        </record>
+        <record id="img_square_thumnail_param_bg_color" model="image.recipe.param">
+            <field name="name">bg_color</field>
+            <field name="value">#FFFFFF</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail"/>
+        </record>
+
+    <!-- recipe square with watermark aspect ratio 1:1 -->
+
+        <record id="img_square_thumnail_watermark_left_top" model="image.recipe">
+            <field name="name">Square (Thumbnail) With Watermark Left Top</field>
+            <field name="description">Define the canvas size to limit the image maximum size.
+Define the watermark image.
+Define the watermark image canvas_size (watermark image will hold the original aspect ratio).
+PS: The canvas will always be the given size</field>
+            <field name="recipe">bg = Image()
+bg.blank(width=int(canvas_size), height=int(canvas_size), background=Color(bg_color))
+bg.format = 'png'
+image.transform(resize='%sx%s' %(int(canvas_size), int(canvas_size)))
+bg.composite(image, (int(canvas_size)-image.width)/2, (int(canvas_size)-image.height)/2)
+wk_img = Image(filename=wk)
+wk_img.transform(resize='%sx%s' %(int(wk_canvas_size), (int(wk_canvas_size))))
+bg.watermark(wk_img, transparency=float(wk_trans), left=int(wk_margin_to_frame), top=int(wk_margin_to_frame))
+res = bg
+            </field>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_canvas_size_xs" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">345</field>
+            <field name="device_type">xs</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_canvas_size_sm" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">345</field>
+            <field name="device_type">sm</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_canvas_size_md" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">360</field>
+            <field name="device_type">md</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_canvas_size_lg" model="image.recipe.param">
+            <field name="name">canvas_size</field>
+            <field name="value">360</field>
+            <field name="device_type">lg</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_bg_color" model="image.recipe.param">
+            <field name="name">bg_color</field>
+            <field name="value">#AAD5B7</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_wk" model="image.recipe.param">
+            <field name="name">wk</field>
+            <field name="value">/usr/share/odoo-addons/addons/base/static/img/main_partner-image.png</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_wk_trans" model="image.recipe.param">
+            <field name="name">wk_trans</field>
+            <field name="value">0</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_wk_canvas_size" model="image.recipe.param">
+            <field name="name">wk_canvas_size</field>
+            <field name="value">50</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+        <record id="img_square_thumnail_watermark_left_top_param_wk_margin_to_frame" model="image.recipe.param">
+            <field name="name">wk_margin_to_frame</field>
+            <field name="value">15</field>
+            <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
+        </record>
+
+    <!-- recipe square aspect ratio 4:3 -->
+        <record id="img_four_three_watermark_right_bottom" model="image.recipe">
+            <field name="name">4:3 With Watermark Right Bottom</field>
+            <field name="description">Define the height to limit the image maximum size.
+Define the watermark image.
+Define the watermark image width (watermark image will hold the original ratio).
+</field>
+            <field name="recipe">bg = Image()
+bg.blank(width=int(float(height)/float(vertical)*float(horizontal)), height=int(height), background=Color(bg_color))
+bg.format = 'png'
+if image.is_landscape():
+    if image.shrink_height(height):
+        image.transform(resize='%sx%s&gt;' %(int(float(height)/float(vertical)*float(horizontal)), int(height)))
+    else:
+        image.transform(resize='%sx&gt;' %int(float(height)*float(image.width)/float(image.height)))
+else:
+    if image.shrink_height(height):
+        image.transform(resize='%sx&gt;' %int(float(height)*float(horizontal)/float(vertical)))
+    else:
+        image.transform(resize='%sx&gt;' %image.width)
+bg.composite(image, (int(float(height)/float(vertical)*float(horizontal))-image.width)/2, (int(height)-image.height)/2)
+wk_img = Image(filename=wk)
+wk_img.transform(resize='%sx%s' %(int(wk_canvas_width), (int(wk_canvas_height))))
+bg.watermark(wk_img, transparency=float(wk_trans), left=bg.width-wk_img.width-int(wk_margin_to_frame), top=bg.height-wk_img.height-int(wk_margin_to_frame))
+res = bg
+            </field>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_height_xs" model="image.recipe.param">
+            <field name="name">height</field>
+            <field name="value">460</field>
+            <field name="device_type">xs</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_height_sm" model="image.recipe.param">
+            <field name="name">height</field>
+            <field name="value">460</field>
+            <field name="device_type">sm</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_height_md" model="image.recipe.param">
+            <field name="name">height</field>
+            <field name="value">500</field>
+            <field name="device_type">md</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_height_lg" model="image.recipe.param">
+            <field name="name">height</field>
+            <field name="value">600</field>
+            <field name="device_type">lg</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_horizontal" model="image.recipe.param">
+            <field name="name">horizontal</field>
+            <field name="value">4</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_vertical" model="image.recipe.param">
+            <field name="name">vertical</field>
+            <field name="value">3</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_bg_color" model="image.recipe.param">
+            <field name="name">bg_color</field>
+            <field name="value">#AAD5B7</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_param_wk" model="image.recipe.param">
+            <field name="name">wk</field>
+            <field name="value">/usr/share/odoo-addons/addons/base/static/img/main_partner-image.png</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_wk_trans" model="image.recipe.param">
+            <field name="name">wk_trans</field>
+            <field name="value">0</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_wk_canvas_width" model="image.recipe.param">
+            <field name="name">wk_canvas_width</field>
+            <field name="value">100</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_wk_canvas_height" model="image.recipe.param">
+            <field name="name">wk_canvas_height</field>
+            <field name="value">100</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+        <record id="img_four_three_watermark_right_bottom_param_wk_margin_to_frame" model="image.recipe.param">
+            <field name="name">wk_margin_to_frame</field>
+            <field name="value">30</field>
+            <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
+        </record>
+
     </data>
+
+    <data noupdate="1">
+        <record id="image_recipe_state_draft" model="image.recipe.state">
+            <field name="name">Draft</field>
+        </record>
+        <record id="image_recipe_state_production" model="image.recipe.state">
+            <field name="name">Production</field>
+        </record>
+        <record id="image_recipe_state_cancel" model="image.recipe.state">
+            <field name="name">Cancel</field>
+        </record>
+    </data>
+
+    <data noupdate="1">
+        <record id="attachment_big_picture" model="ir.attachment">
+            <field name="name">Big Picture</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/big_picture.png</field>
+            <field name="res_model">ir.ui.view</field>
+        </record>
+        <record id="attachment_desert_thumb" model="ir.attachment">
+            <field name="name">Desert Thumb</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/desert_thumb.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+        </record>
+        <record id="attachment_deers_thumb" model="ir.attachment">
+            <field name="name">Deers_Thumb</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/deers_thumb.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+        </record>
+        <record id="attachment_china_thumb" model="ir.attachment">
+            <field name="name">China_Thumb</field>
+            <field name="type">url</field>
+            <field name="url">/website/static/src/img/china_thumb.jpg</field>
+            <field name="res_model">ir.ui.view</field>
+        </record>
+    </data>
+
 </openerp>

@@ -79,7 +79,7 @@ website.snippet.options.transform = website.snippet.Option.extend({
         }
         if (np.$next) {
             if (np.$next.hasClass("choose_recipe")) {
-                openerp.jsonRpc("/website_imagemagick_snippet_options", "call", {
+                openerp.jsonRpc("/website_imagemagick_recipe_change", "call", {
                     "img_src": img_src,
                     "recipe_id": np.$next.data('value')
                 }).done(function(data){

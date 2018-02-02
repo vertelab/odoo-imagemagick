@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="snippets" inherit_id="website.snippets" name="Override image with imagemagick recipe">
+            <xpath expr="//img[@src='/website/static/src/img/big_picture.png']" position="attributes">
+                <attribute name="src"/>
+                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_big_picture').id, request.env.ref('website_imagemagick.img_four_three_watermark_right_bottom').id)</attribute>
+            </xpath>
+            <xpath expr="//img[@alt='Odoo - Sample 1 for three columns']" position="attributes">
+                <attribute name="src"/>
+                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_desert_thumb').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
+            </xpath>
+            <xpath expr="//img[@alt='Odoo - Sample 2 for three columns']" position="attributes">
+                <attribute name="src"/>
+                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_deers_thumb').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
+            </xpath>
+            <xpath expr="//img[@alt='Odoo - Sample 3 for three columns']" position="attributes">
+                <attribute name="src"/>
+                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_china_thumb').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
+            </xpath>
+        </template>
+        <!-- Web Editor Tools -->
+        <template id="website_imagemagick_snippet_options" inherit_id="website.snippet_options" name="Website Imagemagick Snippet Options">
+            <xpath expr="//div[@data-selector='img:not(.cke_iframe):not([data-oe-id]), .media_iframe_video, span.fa, i.fa']" position="inside">
+                <t t-set="recipes" t-value="request.env['image.recipe'].search([('website_published', '=', True)])" />
+                <t t-if="len(recipes)&gt;0">
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1" href="#">Imagemagick Recipes</a>
+                        <ul class="dropdown-menu" name="imagemagick-recipe">
+                            <t t-foreach="recipes" t-as="recipe">
+                                <li t-att-data-value="recipe.id" class="choose_recipe">
+                                    <a>
+                                        <t t-esc="recipe.name" />
+                                    </a>
+                                </li>
+                            </t>
+                        </ul>
+                    </li>
+                </t>
+            </xpath>
+        </template>
+        <template id="website_imagemagick_snippet_option_assets_frontend" inherit_id="website.assets_frontend" name="Website Imagemagick Snippet Option Access Frontend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/website_imagemagick/static/src/js/main.js" />
+            </xpath>
+        </template>
+        <template id="website_imagemagick_snippet_option_js" inherit_id="website.assets_editor" name="Website Imagemagick Snippet Option JS">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/website_imagemagick/static/src/js/snippet.js" />
+            </xpath>
+        </template>
+    </data>
+</openerp>

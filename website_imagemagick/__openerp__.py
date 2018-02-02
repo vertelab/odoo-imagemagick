@@ -29,7 +29,7 @@ Advanced Image handling
 =======================
 
 * Use responsive avare recipies for image handling
-* Web Editor Tools for end user, choose recipe for your images as you are creating pages 
+* Web Editor Tools for end user, choose recipe for your images as you are creating pages
 * Tools for qweb use
 
  https://graphicdesign.stackexchange.com/questions/39430/using-imagemagick-to-create-vibrant-images
@@ -42,9 +42,11 @@ Advanced Image handling
     'external_dependencies': {
         'python': ['wand', ],
     },
-    'data': [ 'views/image_recipe.xml',
-    'website_imagemagick_data.xml',
-    'security/ir.model.access.csv'
+    'data': [
+        'website_imagemagick_data.xml',
+        'security/ir.model.access.csv',
+        'views/snippet.xml',
+        'views/image_recipe.xml',
     ],
     'application': False,
     'installable': True,

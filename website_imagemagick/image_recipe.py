@@ -45,6 +45,18 @@ import subprocess
 import logging
 _logger = logging.getLogger(__name__)
 
+
+class Image(Image):
+    def is_landscape(self):
+        return self.width >= self.height
+
+    def shrink_width(self, width):
+        return self.width >= int(width)
+
+    def shrink_height(self, height):
+        return self.height >= int(height)
+
+
 class website_imagemagic(http.Controller):
 
     # this controller will control url: /image/image_id/magic/recipe_id
@@ -127,9 +139,13 @@ class website_imagemagic(http.Controller):
 # Web Editor tools
 #
 
-
-    @http.route(['/website_imagemagick_wet'], type='json', auth="public", website=True)
-    def website_imagemagick_snippet_options(self, img_src, recipe_id, **kw):
+    """
+    Parameters:
+    * img_src: image src for target image
+    * recipe_id: recipe id of selected recipe
+    """
+    @http.route(['/website_imagemagick_recipe_change'], type='json', auth="public", website=True)
+    def website_imagemagick_recipe_change(self, img_src, recipe_id, **kw):
         if '/website/image/ir.attachment/' in img_src:
             attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
         elif '/imagefield/ir.attachment/datas/' in img_src:
@@ -138,7 +154,6 @@ class website_imagemagic(http.Controller):
             attachment_id = 0
         attachment = request.env['ir.attachment'].browse(int(attachment_id))
         return '/imagefield/ir.attachment/datas/%s/id/%s' %(attachment.id, recipe_id)
-
 
 
 class website(models.Model):
@@ -254,6 +269,15 @@ class website(models.Model):
 
         return response
 
+
+class image_recipe_state(models.Model):
+    _name = 'image.recipe.state'
+
+    name = fields.Char(string='Name')
+    sequence = fields.Integer(string='Sequence')
+    fold = fields.Boolean(string='Folded in Kanban View', help='This stage is folded in the kanban view when there are no records in that state to display.')
+
+
 class image_recipe(models.Model):
     _name = "image.recipe"
 
@@ -267,6 +291,10 @@ class image_recipe(models.Model):
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
+    @api.one
+    def _default_state_id(self):
+        return self.env.ref('website_imagemagick.image_recipe_state_draft').id
+    state_id = fields.Many2one(comodel_name='image.recipe.state', string='State', default=_default_state_id)
     @api.one
     def _params(self):
         self.param_list = ','.join(self.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
@@ -305,7 +333,14 @@ class image_recipe(models.Model):
         else:
             self.external_id = external_id.complete_name
 
+    @api.model
+    def _read_state_id(self, present_ids, domain, **kwargs):
+        states = self.env['image.recipe.state'].search([], order='sequence').name_get()
+        return states, None
 
+    _group_by_full = {
+        'state_id': _read_state_id,
+    }
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 
