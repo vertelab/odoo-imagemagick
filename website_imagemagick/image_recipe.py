@@ -123,6 +123,24 @@ class website_imagemagic(http.Controller):
     def placeholder(self, response):
         return request.env['website']._image_placeholder(response)
 
+#
+# Web Editor tools
+#
+
+
+    @http.route(['/website_imagemagick_wet'], type='json', auth="public", website=True)
+    def website_imagemagick_snippet_options(self, img_src, recipe_id, **kw):
+        if '/website/image/ir.attachment/' in img_src:
+            attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
+        elif '/imagefield/ir.attachment/datas/' in img_src:
+            attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id', img_src).group(1)
+        else:
+            attachment_id = 0
+        attachment = request.env['ir.attachment'].browse(int(attachment_id))
+        return '/imagefield/ir.attachment/datas/%s/id/%s' %(attachment.id, recipe_id)
+
+
+
 class website(models.Model):
     _inherit = 'website'
 

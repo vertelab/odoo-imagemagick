@@ -149,6 +149,7 @@
 
     </data>
     <data>
+        <!-- Inform server of Device Type for responsive recipe -->
         <template id="assets_frontend" inherit_id="website.assets_frontend">
             <xpath expr="." position="inside">
                 <script type="text/javascript">
@@ -159,5 +160,39 @@
                 </script>
             </xpath>
         </template>
+        
+    <!-- Web Editor Tools -->
+    <template id="website_imagemagick_snippet_options" inherit_id="website.snippet_options" name="Website Imagemagick Snippet Options">
+      <xpath expr="//div[@data-selector='img:not(.cke_iframe):not([data-oe-id]), .media_iframe_video, span.fa, i.fa']" position="inside">
+        <t t-set="recipes" t-value="request.env['image.recipe'].search([('website_published', '=', True)])" />
+        <t t-if="len(recipes)&gt;0">
+          <li class="dropdown-submenu">
+            <a tabindex="-1" href="#">Imagemagick Recipes</a>
+            <ul class="dropdown-menu" name="imagemagick-recipe">
+              <t t-foreach="recipes" t-as="recipe">
+                <li t-att-data-value="recipe.id" class="choose_recipe">
+                  <a>
+                    <t t-esc="recipe.name" />
+                  </a>
+                </li>
+              </t>
+            </ul>
+          </li>
+        </t>
+      </xpath>
+    </template>
+    <template id="website_imagemagick_snippet_option_assets_frontend" inherit_id="website.assets_frontend" name="Website Imagemagick Snippet Option Access Frontend">
+      <xpath expr="." position="inside">
+        <script type="text/javascript" src="/website_imagemagick_snippet_option/static/src/js/main.js" />
+      </xpath>
+    </template>
+    <template id="website_imagemagick_snippet_option_js" inherit_id="website.assets_editor" name="Website Imagemagick Snippet Option JS">
+      <xpath expr="." position="inside">
+        <script type="text/javascript" src="/website_imagemagick_snippet_option/static/src/js/snippet.js" />
+      </xpath>
+    </template>        
+        
+        
+        
     </data>
 </openerp>

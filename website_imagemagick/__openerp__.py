@@ -28,6 +28,12 @@
 Advanced Image handling
 =======================
 
+* Use responsive avare recipies for image handling
+* Web Editor Tools for end user, choose recipe for your images as you are creating pages 
+* Tools for qweb use
+
+ https://graphicdesign.stackexchange.com/questions/39430/using-imagemagick-to-create-vibrant-images
+
 
 """,
     'author': 'Vertel AB',
