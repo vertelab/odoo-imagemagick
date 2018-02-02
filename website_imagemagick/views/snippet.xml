@@ -8,15 +8,15 @@
             </xpath>
             <xpath expr="//img[@alt='Odoo - Sample 1 for three columns']" position="attributes">
                 <attribute name="src"/>
-                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_desert_thumb').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
+                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_desert').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
             </xpath>
             <xpath expr="//img[@alt='Odoo - Sample 2 for three columns']" position="attributes">
                 <attribute name="src"/>
-                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_deers_thumb').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
+                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_deers').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
             </xpath>
             <xpath expr="//img[@alt='Odoo - Sample 3 for three columns']" position="attributes">
                 <attribute name="src"/>
-                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_china_thumb').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
+                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_china').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
             </xpath>
         </template>
         <!-- Web Editor Tools -->

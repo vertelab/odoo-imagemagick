@@ -163,10 +163,10 @@ if image.is_landscape():
     if image.shrink_height(height):
         image.transform(resize='%sx%s&gt;' %(int(float(height)/float(vertical)*float(horizontal)), int(height)))
     else:
-        image.transform(resize='%sx&gt;' %int(float(height)*float(image.width)/float(image.height)))
+        image.transform(resize='%sx%s&gt;' %(int(float(height)/float(image.height)*float(image.width)), image.height))
 else:
     if image.shrink_height(height):
-        image.transform(resize='%sx&gt;' %int(float(height)*float(horizontal)/float(vertical)))
+        image.transform(resize='%sx%s&gt;' %(int(float(height)/float(vertical)*float(horizontal)), int(height)))
     else:
         image.transform(resize='%sx&gt;' %image.width)
 bg.composite(image, (int(float(height)/float(vertical)*float(horizontal))-image.width)/2, (int(height)-image.height)/2)
@@ -262,22 +262,22 @@ res = bg
             <field name="url">/website/static/src/img/big_picture.png</field>
             <field name="res_model">ir.ui.view</field>
         </record>
-        <record id="attachment_desert_thumb" model="ir.attachment">
-            <field name="name">Desert Thumb</field>
+        <record id="attachment_desert" model="ir.attachment">
+            <field name="name">Desert</field>
             <field name="type">url</field>
-            <field name="url">/website/static/src/img/desert_thumb.jpg</field>
+            <field name="url">/website/static/src/img/desert.jpg</field>
             <field name="res_model">ir.ui.view</field>
         </record>
-        <record id="attachment_deers_thumb" model="ir.attachment">
-            <field name="name">Deers_Thumb</field>
+        <record id="attachment_deers" model="ir.attachment">
+            <field name="name">Deers</field>
             <field name="type">url</field>
-            <field name="url">/website/static/src/img/deers_thumb.jpg</field>
+            <field name="url">/website/static/src/img/deers.jpg</field>
             <field name="res_model">ir.ui.view</field>
         </record>
-        <record id="attachment_china_thumb" model="ir.attachment">
-            <field name="name">China_Thumb</field>
+        <record id="attachment_china" model="ir.attachment">
+            <field name="name">China</field>
             <field name="type">url</field>
-            <field name="url">/website/static/src/img/china_thumb.jpg</field>
+            <field name="url">/website/static/src/img/china.jpg</field>
             <field name="res_model">ir.ui.view</field>
         </record>
     </data>
