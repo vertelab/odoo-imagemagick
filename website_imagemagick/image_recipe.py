@@ -298,7 +298,7 @@ class image_recipe(models.Model):
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
     @api.one
     def _default_state_id(self):
-        return self.env.ref('website_imagemagick.image_recipe_state_draft').id
+        return self.env.ref('website_imagemagick.image_recipe_state_draft').id if self.env.ref('website_imagemagick.image_recipe_state_draft') else None
     state_id = fields.Many2one(comodel_name='image.recipe.state', string='State', default=_default_state_id)
     @api.one
     def _params(self):
