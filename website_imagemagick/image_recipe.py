@@ -68,19 +68,20 @@ class website_imagemagic(http.Controller):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref)
         if recipe:
-            return recipe.send_file(http, attachment=image)
+            return recipe.send_file(attachment=image)
         return request.registry['website']._image(
                 request.cr, request.uid, 'ir.attachment','%s_%s' % (image.id, hashlib.sha1(image.sudo().write_date or image.sudo().create_date or '').hexdigest()[0:7]),
                 'datas', werkzeug.wrappers.Response(),250,250,cache=STATIC_CACHE)
 
-    # this controller will control url: /image/image_url/magic/recipe_id
-    @http.route(['/imageurl/id/<model("image.recipe"):recipe>','/imageurl/ref/<string:recipe>'], type='http', auth="public", website=True)
+    # this controller will control url: /image/id/<id>?url=<your url>
+    @http.route(['/imageurl/id/<model("image.recipe"):recipe>','/imageurl/ref/<string:recipe_ref>'], type='http', auth="public", website=True)
     def view_url(self, recipe=None, recipe_ref=None, **post):
         url = post.get('url','')
+        if url[0] == '/':
+            url=url[1:]
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
-        return recipe.send_file(http, url=url)
-
+        return recipe.send_file(url='/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)
 
     @http.route([
         '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
@@ -92,7 +93,7 @@ class website_imagemagic(http.Controller):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
         #~ recipe.send_file(http,field=field,model=model,id=id.split('_')[0])
-        return recipe.sudo().send_file(http,field=field,model=model,id=id)
+        return recipe.sudo().send_file(field=field,model=model,id=id)
 
     @http.route([
         '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
@@ -104,7 +105,7 @@ class website_imagemagic(http.Controller):
         o = request.env[model].browse(int(id))
         url = getattr(o, field).strip()
         attachment_id = int(url.split('/')[6].split('_')[0])
-        return recipe.send_file(http,field='datas',model='ir.attachment',id=attachment_id)
+        return recipe.send_file(field='datas',model='ir.attachment',id=attachment_id)
 
     @http.route([
         '/website/imagemagick/<model>/<field>/<id>/<model("image.recipe"):recipe>',
@@ -161,6 +162,19 @@ class website_imagemagic(http.Controller):
             attachment_id = 0
         attachment = request.env['ir.attachment'].browse(int(attachment_id))
         return '/imagefield/ir.attachment/datas/%s/id/%s' %(attachment.id, recipe_id)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     #TODO: reset recipe to normal attachment
 
@@ -222,11 +236,11 @@ class website(models.Model):
         user = self.env['res.users'].browse(self._uid)
         o = self.env[model].sudo().browse(int(id))
         if o.check_access_rights('read', raise_exception=False):
-            return recipe.sudo().send_file(http,field=field,model=model,id=id)
+            return recipe.sudo().send_file(field=field,model=model,id=id)
         if 'website_published' in o.fields_get().keys() and o.website_published == True:
             if user.has_group('base.group_website_publisher') or recipe.website_published == True:
-                return recipe.sudo().send_file(http,field=field,model=model,id=id)
-        return recipe.send_file(http,field=field,model=model,id=id)
+                return recipe.sudo().send_file(field=field,model=model,id=id)
+        return recipe.send_file(field=field,model=model,id=id)
 
         record = self.env[model].browse(id)
         if not len(record) > 0 and 'website_published' in record._fields:
@@ -375,7 +389,7 @@ class image_recipe(models.Model):
             return attachment.write_date
         return self.write_date
 
-    def send_file(self, http, attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
+    def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         mimetype = 'image/%s' % self.image_format
         if field:
             o = self.env[model].sudo().browse(int(id))
@@ -384,7 +398,8 @@ class image_recipe(models.Model):
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
             return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format)), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
-        return http.send_file(self.run(self.url_to_img(url)), filename=url)
+        #~ return http.send_file(self.run(self.url_to_img(url)), filename=url)
+        return http.send_file(StringIO(self.run(Image(filename=url)).make_blob(format=self.image_format)),mimetype=mimetype)
 
 
     def run(self, image, **kwargs):   # return a image with specified recipe
