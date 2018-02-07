@@ -46,6 +46,8 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
+# https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization#selecting-the-right-image-format
+
 class Image(Image):
     def is_landscape(self):
         return self.width >= self.height
@@ -72,8 +74,9 @@ class website_imagemagic(http.Controller):
                 'datas', werkzeug.wrappers.Response(),250,250,cache=STATIC_CACHE)
 
     # this controller will control url: /image/image_url/magic/recipe_id
-    @http.route(['/imageurl/<string:url>/id/<model("image.recipe"):recipe>','/imageurl/<string:url>/ref/<string:recipe>'], type='http', auth="public", website=True)
-    def view_url(self, url=None, recipe=None, recipe_ref=None, **post):
+    @http.route(['/imageurl/id/<model("image.recipe"):recipe>','/imageurl/ref/<string:recipe>'], type='http', auth="public", website=True)
+    def view_url(self, recipe=None, recipe_ref=None, **post):
+        url = post.get('url','')
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
         return recipe.send_file(http, url=url)
@@ -299,14 +302,15 @@ class image_recipe(models.Model):
     @api.one
     def _default_state_id(self):
         return self.env.ref('website_imagemagick.image_recipe_state_draft').id if self.env.ref('website_imagemagick.image_recipe_state_draft') else None
-    state_id = fields.Many2one(comodel_name='image.recipe.state', string='State', default=_default_state_id)
+    state_id = fields.Many2one(comodel_name='image.recipe.state', string='State' ) # , default=_default_state_id)
     @api.one
     def _params(self):
         self.param_list = ','.join(self.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
     param_list = fields.Char(compute=_params)
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
-    external_id = fields.Char(string='External ID')
+    image_format = fields.Selection([('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
+   
     @api.model
     def _image(self):
         try:
@@ -337,7 +341,8 @@ class image_recipe(models.Model):
                 raise Warning('\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
         else:
             self.external_id = external_id.complete_name
-
+    external_id = fields.Char(string='External ID')
+ 
     @api.model
     def _read_state_id(self, present_ids, domain, **kwargs):
         states = self.env['image.recipe.state'].search([], order='sequence').name_get()
@@ -371,13 +376,14 @@ class image_recipe(models.Model):
         return self.write_date
 
     def send_file(self, http, attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
+        mimetype = 'image/%s' % self.image_format
         if field:
             o = self.env[model].sudo().browse(int(id))
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
-            return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format='png')), filename=field, mtime=self.get_mtime(o))
+            return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format=self.image_format)), mimetype=mimetype, filename=field, mtime=self.get_mtime(o))
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
-            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format='png')), filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format)), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
         return http.send_file(self.run(self.url_to_img(url)), filename=url)
 
 

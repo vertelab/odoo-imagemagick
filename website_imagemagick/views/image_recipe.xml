@@ -12,6 +12,7 @@
                     <field name="color"/>
                     <field name="name"/>
                     <field name="state_id"/>
+                    <field name="image_format"/>
                     <field name="recipe"/>
                     <field name="param_ids"/>
                     <templates>
@@ -56,9 +57,11 @@
                         <div class="oe_left">
                             <field name="website_published" class="pull-right" widget="website_button"/>
                         </div>
+                        
                         <group>
                             <group>
                                 <field name="external_id"/>
+                                <field name='image_format'/>
                             </group>
                             <button type="object" name="get_external_id" class="oe_highlight" string="Get External ID"/>
                         </group>
