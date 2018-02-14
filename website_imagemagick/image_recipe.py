@@ -77,11 +77,13 @@ class website_imagemagic(http.Controller):
     @http.route(['/imageurl/id/<model("image.recipe"):recipe>','/imageurl/ref/<string:recipe_ref>'], type='http', auth="public", website=True)
     def view_url(self, recipe=None, recipe_ref=None, **post):
         url = post.get('url','')
-        if url[0] == '/':
+        if len(url)>0 and url[0] == '/':
             url=url[1:]
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
-        return recipe.send_file(url='/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)
+        if url:
+            return recipe.send_file(url='/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)
+        return http.send_file(StringIO(recipe.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=recipe.image_format if recipe.image_format else 'png')))
 
     @http.route([
         '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
@@ -152,7 +154,7 @@ class website_imagemagic(http.Controller):
     """
     @http.route(['/website_imagemagick_recipe_change'], type='json', auth="public", website=True)
     def website_imagemagick_recipe_change(self, img_src, recipe_id, **kw):
-        #~ _logger.error('url %s' % img_src)
+        _logger.error('url %s' % img_src)
         attachment_id = 0
         url = None
         if '/website/static/src/img/' in img_src and not '/imageurl' in img_src:
@@ -165,11 +167,11 @@ class website_imagemagic(http.Controller):
             attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id', img_src).group(1)
         elif '/imagemagick/' in img_src:
             attachment_id = re.search('/imagemagick/(.*)/id', img_src).group(1)
-            attachment = request.env['ir.attachment'].browse(int(attachment_id))
+            attachment = request.env['ir.attachment'].browse(int(attachment_id if attachment_id.isdigit() else 0))
             return '/imagemagick/%s/id/%s' %(attachment.id, recipe_id)
         else:
             attachment_id = 0
-        attachment = request.env['ir.attachment'].browse(int(attachment_id))
+        attachment = request.env['ir.attachment'].browse(int(attachment_id  if attachment_id.isdigit() else 0))
         return '/imagefield/ir.attachment/datas/%s/id/%s' %(attachment.id, recipe_id)
 
 
@@ -401,7 +403,9 @@ class image_recipe(models.Model):
     def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
         if field:
-            o = self.env[model].sudo().browse(int(id))
+            o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
+            if not o:
+                return http.send_file(StringIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
             return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field, mtime=self.get_mtime(o))
         if attachment:
@@ -429,8 +433,8 @@ class image_recipe(models.Model):
             'http': http,
             'request': request,
             'website': request.website,
-            'logo': request.website.company_id.logo,
-            'logo_web': request.website.company_id.logo_web,
+            'logo': Image(blob=request.website.company_id.logo.decode('base64')),
+            'logo_web': Image(blob=request.website.company_id.logo_web.decode('base64')),
             })
         try:
             eval(self.recipe, kwargs, mode='exec', nocopy=True)

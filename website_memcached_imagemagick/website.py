@@ -42,8 +42,7 @@ class CachedImageMagick(website_imagemagic):
     #~ @http.route(['/imageurl/<string:url>/id/<model("image.recipe"):recipe>','/imageurl/<string:url>/ref/<string:recipe>'], type='http', auth="public", website=True)
     @memcached.route(flush_type='imagemagick',binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
     def view_url(self, url=None, recipe=None, recipe_ref=None, **post):
-        return super(CachedImageMagick, self).view_url(url, recipe, recipe_ref, **post)
-
+        return super(CachedImageMagick, self).view_url(recipe, recipe_ref, **post)
 
     #~ @http.route([
         #~ '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
