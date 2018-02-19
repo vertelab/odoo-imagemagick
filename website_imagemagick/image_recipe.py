@@ -91,7 +91,7 @@ class website_imagemagic(http.Controller):
         #~ '/imageobj/<>/ref/<string:recipe>'
 
         ], type='http', auth="public", website=True, multilang=False)
-    def website_image(self, model, id, field, recipe=None,recipe_ref=None):
+    def website_image(self, model, id, field, recipe=None,recipe_ref=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
         #~ recipe.send_file(http,field=field,model=model,id=id.split('_')[0])
@@ -101,7 +101,7 @@ class website_imagemagic(http.Controller):
         '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
         '/imagefieldurl/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
         ], type='http', auth="public", website=True, multilang=False)
-    def website_url(self, model, id, field, recipe=None,recipe_ref=None):
+    def website_url(self, model, id, field, recipe=None,recipe_ref=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref)
         o = request.env[model].browse(int(id))
@@ -112,7 +112,7 @@ class website_imagemagic(http.Controller):
     @http.route([
         '/website/imagemagick/<model>/<field>/<id>/<model("image.recipe"):recipe>',
         ], type='http', auth="public", website=True, multilang=False)
-    def website_imagemagick(self, model, field, id, recipe=None):
+    def website_imagemagick(self, model, field, id, recipe=None, **post):
         try:
             idsha = id.split('_')
             id = idsha[0]
@@ -160,7 +160,7 @@ class website_imagemagic(http.Controller):
         if '/website/static/src/img/' in img_src and not '/imageurl' in img_src:
             url = img_src[img_src.find('/website'):]
             return '/imageurl/id/%s?url=%s' %(recipe_id,url)
-            
+
         if '/website/image/ir.attachment/' in img_src:
             attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
         elif '/imagefield/ir.attachment/datas/' in img_src:
@@ -335,7 +335,7 @@ class image_recipe(models.Model):
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
     image_format = fields.Selection([('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
-   
+
     @api.model
     def _image(self):
         try:
@@ -367,7 +367,7 @@ class image_recipe(models.Model):
         else:
             self.external_id = external_id.complete_name
     external_id = fields.Char(string='External ID')
- 
+
     @api.model
     def _read_state_id(self, present_ids, domain, **kwargs):
         states = self.env['image.recipe.state'].search([], order='sequence').name_get()
@@ -403,11 +403,14 @@ class image_recipe(models.Model):
     def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
         if field:
-            o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
+            #o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
+            o = self.env[model].sudo().search_read([('id','=',int(id if id.isdigit() else 0))],[field])
             if not o:
                 return http.send_file(StringIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
+            o = o[0]
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
-            return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field, mtime=self.get_mtime(o))
+            #return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field, mtime=self.get_mtime(o))
+            return http.send_file(StringIO(self.run(Image(blob=o[field].decode('base64'))).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field)
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
             return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
@@ -429,7 +432,7 @@ class image_recipe(models.Model):
             'image': image,
             '_logger': _logger,
             'user': self.env['res.users'].browse(self._uid),
-            'record': kwargs.get('record',None), 
+            'record': kwargs.get('record',None),
             'http': http,
             'request': request,
             'website': request.website,
@@ -438,7 +441,7 @@ class image_recipe(models.Model):
             })
         try:
             eval(self.recipe, kwargs, mode='exec', nocopy=True)
-        except ValueError: 
+        except ValueError:
             e = sys.exc_info()
             _logger.error('ImageMagick Recipe: %s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
         return kwargs.get('res',None) or Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')
