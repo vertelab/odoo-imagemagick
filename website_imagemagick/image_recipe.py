@@ -331,12 +331,12 @@ class image_recipe(models.Model):
     @api.one
     def _params(self):
         self.param_list = ','.join(self.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
-    param_list = fields.Char(compute=_params)
+    param_list = fields.Char(compute='_params')
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
     image_format = fields.Selection([('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
 
-    @api.model
+    @api.one
     def _image(self):
         try:
             url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
@@ -348,7 +348,7 @@ class image_recipe(models.Model):
             e = sys.exc_info()
             message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
             _logger.error(message)
-    image = fields.Binary(compute=_image)
+    image = fields.Binary(compute='_image')
     @api.multi
     def get_external_id(self):
         external_id = self.env['ir.model.data'].search([('model', '=', 'image.recipe'), ('res_id', '=', self.id)])
