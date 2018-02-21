@@ -423,6 +423,7 @@ class image_recipe(models.Model):
         kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
+        company = request.website.company_id if request.website else self.env.user.company_id
         kwargs.update({
             'time': time,
             'Image': Image,
@@ -436,15 +437,15 @@ class image_recipe(models.Model):
             'http': http,
             'request': request,
             'website': request.website,
-            'logo': Image(blob=request.website.company_id.logo.decode('base64')),
-            'logo_web': Image(blob=request.website.company_id.logo_web.decode('base64')),
+            #~ 'logo': Image(blob=company.logo.decode('base64')),
+            #~ 'logo_web': Image(blob=company.logo_web.decode('base64')),
             })
         try:
             eval(self.recipe, kwargs, mode='exec', nocopy=True)
         except ValueError:
             e = sys.exc_info()
             _logger.error('ImageMagick Recipe: %s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
-        return kwargs.get('res',None) or Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')
+        return kwargs.get('res', image or None) or Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')
 
 class set_device_type(http.Controller):
 
@@ -490,4 +491,3 @@ class image_recipe_param(models.Model):
             #~ return float(self.value)
         #~ elif self.type == 'int':
             #~ return int(self.value)
-
