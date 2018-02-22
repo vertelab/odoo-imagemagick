@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+    <t t-extend="website.editor.dialog.image">
+        <t t-jquery="li" t-operation="after">
+            <li><a href="#" data-toggle="modal" data-target="#iamgemagick_cropper_modal" class="js_imagemagick_cropper">Upload image use cropper</a></li>
+        </t>
+    </t>
+</templates>

@@ -38,10 +38,18 @@ class imagemagickCropper(http.Controller):
         return request.website.render('imagemagick_cropper.imagemagick_cropper', {'image': image})
 
     @http.route(['/magick_crop'], type='json', methods=['POST'], website=True)
-    def magick_crop(self, image_url=None, dataX=0, dataY=0, dataWidth=0, dataHeight=0, dataRotate=0, dataScaleX=1, dataScaleY=1, **kw):
-        if 'ir.attachment' in image_url:
+    def magick_crop(self, name, data, dataX=0, dataY=0, dataWidth=0, dataHeight=0, dataRotate=0, dataScaleX=1, dataScaleY=1, **kw):
+        img = request.env['ir.attachment'].create({
+            'name': name,
+            'type': 'binary',
+            'res_model': 'ir.ui.view',
+            'datas': data
+        })
+        #~ if 'ir.attachment' in image_url:
+        if img:
             # binary -> decode -> wand.image -> imagemagick -> make_blob() -> encode -> binary
-            img_attachment = request.env['ir.attachment'].browse(int(image_url.split('/')[4].split('_')[0]))
+            #~ img_attachment = request.env['ir.attachment'].browse(int(image_url.split('/')[4].split('_')[0]))
+            img_attachment = request.env['ir.attachment'].browse(img.id)
             wand_img = Image(blob=getattr(img_attachment, 'datas').decode('base64'))
             try:
                 wand_img.crop(int(dataX), int(dataY), width=int(dataWidth), height=int(dataHeight))

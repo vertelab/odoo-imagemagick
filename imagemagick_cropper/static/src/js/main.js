@@ -219,9 +219,9 @@ $(function () {
 
       if (files && files.length) {
         file = files[0];
-
         if (/^image\/\w+$/.test(file.type)) {
           blobURL = URL.createObjectURL(file);
+            convertBlob(file.name, blobURL);
           $image.one('built.cropper', function () {
 
             // Revoke when load complete
@@ -239,3 +239,53 @@ $(function () {
 
 });
 
+function convertBlob(name, blobURL) {
+    var xhr = new XMLHttpRequest;
+    xhr.responseType = 'blob';
+    xhr.onload = function() {
+        var recoveredBlob = xhr.response;
+        var reader = new FileReader;
+        reader.onload = function() {
+            var blobAsDataUrl = reader.result;
+            //~ window.location = blobAsDataUrl;
+            var img_binary = blobAsDataUrl.substr(blobAsDataUrl.indexOf(",") + 1)
+            $("#magick_crop").attr("data-image_name", name);
+            $("#magick_crop").attr("data-image_data", img_binary);
+       };
+       reader.readAsDataURL(recoveredBlob);
+    };
+    xhr.open('GET', blobURL);
+    xhr.send();
+}
+
+function magick_crop(){
+    if ($("#image").attr("src") != "") {
+        var name = $("#magick_crop").data("image_name");
+        var img_binary = $("#magick_crop").data("image_data");
+        openerp.jsonRpc("/magick_crop", "call", {
+            //~ 'image_url': $("#image").attr('src'),
+            'name': name,
+            'data': img_binary,
+            'image_id': $("#image").data("id"),
+            'dataX': $("#dataX").val(),
+            'dataY': $("#dataY").val(),
+            'dataWidth': $("#dataWidth").val(),
+            'dataHeight': $("#dataHeight").val(),
+            'dataRotate': $("#dataRotate").val(),
+            'dataScaleX': $("#dataScaleX").val(),
+            'dataScaleY': $("#dataScaleY").val(),
+        }).then(function(data){
+            //~ if(data === 'Magic Crop Completed!'){
+                console.log('from function 1 ' + data);
+                location.reload();
+            //~ }
+        }, function(data) {
+                console.log('from function 2 ' + data);
+                location.reload();
+            }
+        );
+    }
+}
+
+$(document).ready(function() {
+});

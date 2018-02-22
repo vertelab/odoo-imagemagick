@@ -31,8 +31,7 @@ Crop images
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
     'depends': ['website_imagemagick'],
-    'data': [ 'imagemagick_cropper_view.xml'
-    ],
+    'data': ['imagemagick_cropper_view.xml'],
     'application': True,
     'installable': True,
 }
