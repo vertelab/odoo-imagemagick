@@ -30,14 +30,25 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
+class image_recipe(models.Model):
+    _inherit = "image.recipe"
+
+    @api.multi
+    def write(self, vals):
+        for key in memcached.get_keys(flush_type='imagemagick %s-%s' %(self.name, self.id)):
+            memcached.mc_delete(key)
+        return super(image_recipe, self).write(vals)
+
+
 class Website(models.Model):
     _inherit = 'website'
 
     def get_kw_imagemagick(self, kw):
         if kw.get('recipe', None):
-            return kw['recipe'].id
+            return '%s-%s' %(kw['recipe'].name, kw['recipe'].id)
         if kw.get('recipe_ref', None):
-            return kw['recipe_ref']
+            recipe = self.env.ref(kw['recipe_ref'])
+            return '%s-%s' %(recipe.name, recipe.id)
         return ''
 
 
