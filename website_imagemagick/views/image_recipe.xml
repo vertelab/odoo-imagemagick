@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
 
         <!-- image recipe kanban view -->
@@ -18,19 +18,25 @@
                     <templates>
                         <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
-                            <div class="oe_dropdown_toggle oe_dropdown_kanban" groups="base.group_user">
-                                <span class="oe_e">í</span>
-                                <ul class="oe_dropdown_menu">
-                                    <t t-if="widget.view.is_action_enabled('edit')"><li><a type="edit">Edit...</a></li></t>
-                                    <t t-if="widget.view.is_action_enabled('delete')"><li><a type="delete">Delete</a></li></t>
-                                    <li><ul class="oe_kanban_colorpicker" data-field="color"/></li>
-                                </ul>
+                            <div class="oe_dropdown_kanban">
+                                <div class="oe_dropdown_toggle pull-right" groups="base.group_user">
+                                    <i class="fa fa-bars fa-lg"/>
+                                    <ul class="oe_dropdown_menu">
+                                        <li>
+                                            <a type="delete">Delete</a>
+                                        </li>
+                                        <li>
+                                            <ul class="oe_kanban_colorpicker"
+                                                data-field="color"/>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="oe_clear"></div>
                             </div>
                             <div class="oe_kanban_content">
                                 <div><b><field name="name"/></b></div>
                                 <div><field name="param_list"/></div>
                                 <a type="open"><img t-att-src="kanban_image('image.recipe', 'image', record.id.value)" style="max-width: 200px; max-height: 200px;"/></a>
-
                             </div>
                             <div class="oe_clear"></div>
                         </div>
@@ -57,7 +63,7 @@
                         <div class="oe_left">
                             <field name="website_published" class="pull-right" widget="website_button"/>
                         </div>
-                        
+
                         <group>
                             <group>
                                 <field name="external_id"/>
@@ -144,6 +150,7 @@
         <!-- recipe action window -->
         <record id="action_image_recipe_all_view" model="ir.actions.act_window">
             <field name="name">Image Recipe</field>
+            <field name="type">ir.actions.act_window</field>
             <field name="res_model">image.recipe</field>
             <field name="view_type">form</field>
             <field name="view_mode">kanban,tree,form</field>
@@ -151,7 +158,7 @@
             <field name="context">{"search_default_current": 1}</field>
         </record>
 
-        <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_config" sequence="100" action="action_image_recipe_all_view"/>
+        <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_administration_shortcut" sequence="100" action="action_image_recipe_all_view"/>
 
     </data>
     <data>
@@ -159,13 +166,17 @@
         <template id="assets_frontend" inherit_id="website.assets_frontend">
             <xpath expr="." position="inside">
                 <script type="text/javascript">
-                    openerp.jsonRpc("/set_device_type", "call", {
+                    odoo.define('website_imagemagick.device_tupe', function (require) {
+                    'use strict';
+                    var ajax = require("web.ajax");
+                    ajax.jsonRpc("/set_device_type", "call", {
                         width: $(window).width()
                     }).done(function(data){
+                    });
                     });
                 </script>
             </xpath>
         </template>
 
     </data>
-</openerp>
+</odoo>

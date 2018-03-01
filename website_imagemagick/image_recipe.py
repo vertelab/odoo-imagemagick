@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2017 Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Enterprise Management Solution, third party addon
+#    Copyright (C) 2014-2017 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,13 +20,13 @@
 ##############################################################################
 import base64
 from cStringIO import StringIO
-from openerp import models, fields, api, _
-from openerp.exceptions import except_orm, Warning, RedirectWarning
-from openerp import http
-from openerp.http import request, STATIC_CACHE
-from openerp import SUPERUSER_ID
+from odoo import models, fields, api, _
+from odoo.exceptions import except_orm, Warning, RedirectWarning
+from odoo import http
+from odoo.http import request, STATIC_CACHE
+from odoo import SUPERUSER_ID
 from datetime import datetime
-from openerp.modules import get_module_resource, get_module_path
+from odoo.modules import get_module_resource, get_module_path
 import werkzeug
 import pytz
 import re
@@ -160,11 +160,12 @@ class website_imagemagic(http.Controller):
         if '/website/static/src/img/' in img_src and not '/imageurl' in img_src:
             url = img_src[img_src.find('/website'):]
             return '/imageurl/id/%s?url=%s' %(recipe_id,url)
-
         if '/website/image/ir.attachment/' in img_src:
             attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
         elif '/imagefield/ir.attachment/datas/' in img_src:
             attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id', img_src).group(1)
+        elif '/web/image/' in img_src:
+            attachment_id = re.search('/web/image/(.*)', img_src).group(1)
         elif '/imagemagick/' in img_src:
             attachment_id = re.search('/imagemagick/(.*)/id', img_src).group(1)
             attachment = request.env['ir.attachment'].browse(int(attachment_id if attachment_id.isdigit() else 0))

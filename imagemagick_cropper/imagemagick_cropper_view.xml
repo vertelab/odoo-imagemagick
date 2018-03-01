@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
         <template id="imagemagick_cropper_modal_content" name="Imagemagick Cropper Modal Content">
             <div class="container">
@@ -478,4 +478,4 @@
             </xpath>
         </template>
     </data>
-</openerp>
+</odoo>

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
     <data>
 
     <!-- carousel image -->
         <record id="im_carousel_img" model="image.recipe">
             <field name="name">Carousel</field>
+            <field name="image_format">jpeg</field>
             <field name="recipe">image.transform(resize=width+'x'+'>')
 image.crop(int(left), int(top), image.width, int(bottom))
             </field>
@@ -39,6 +40,7 @@ image.crop(int(left), int(top), image.width, int(bottom))
     <!-- recipe square aspect ratio 1:1 -->
         <record id="img_square_thumnail" model="image.recipe">
             <field name="name">Square (Thumbnail)</field>
+            <field name="image_format">jpeg</field>
             <field name="description">Define the canvas size to limit the image maximum size.
 Define the background color with hex.
 </field>
@@ -84,6 +86,7 @@ res = bg
 
         <record id="img_square_thumnail_watermark_left_top" model="image.recipe">
             <field name="name">Square (Thumbnail) With Watermark Left Top</field>
+            <field name="image_format">jpeg</field>
             <field name="description">Define the canvas size to limit the image maximum size.
 Define the watermark image.
 Define the watermark image canvas_size (watermark image will hold the original aspect ratio).
@@ -152,6 +155,7 @@ res = bg
     <!-- recipe square aspect ratio 4:3 -->
         <record id="img_four_three_watermark_right_bottom" model="image.recipe">
             <field name="name">4:3 With Watermark Right Bottom</field>
+            <field name="image_format">jpeg</field>
             <field name="description">Define the height to limit the image maximum size.
 Define the watermark image.
 Define the watermark image width (watermark image will hold the original ratio).
@@ -282,4 +286,4 @@ res = bg
         </record>
     </data>
 
-</openerp>
+</odoo>

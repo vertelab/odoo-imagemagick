@@ -1,8 +1,13 @@
-var website = openerp.website;
+odoo.define('website_imagemagick.snippets.editor', function (require) {
+'use strict';
+
+var ajax = require("web.ajax");
+var options = require('web_editor.snippets.options');
+
 var img_src = ''; // img src
 var current_taget = null;
 
-website.snippet.options.transform = website.snippet.Option.extend({
+options.transform = options.Class.extend({
     start: function () {
         var self = this;
         this._super();
@@ -79,7 +84,7 @@ website.snippet.options.transform = website.snippet.Option.extend({
         }
         if (np.$next) {
             if (np.$next.hasClass("choose_recipe")) {
-                openerp.jsonRpc("/website_imagemagick_recipe_change", "call", {
+                ajax.jsonRpc("/website_imagemagick_recipe_change", "call", {
                     "img_src": img_src,
                     "recipe_id": np.$next.data('value')
                 }).done(function(data){
@@ -93,4 +98,4 @@ website.snippet.options.transform = website.snippet.Option.extend({
         }
     }
 });
-
+});

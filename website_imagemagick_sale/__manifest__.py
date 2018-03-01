@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2016 Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Enterprise Management Solution, third party addon
+#    Copyright (C) 2014-2015 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,35 +20,21 @@
 ##############################################################################
 
 {
-    'name': 'Image Magic',
+    'name': 'Image Magic Sale',
     'version': '0.1',
     'category': 'Tools',
-    'licence': 'AGPL-3',
     'description': """
-Advanced Image handling
+Sales for images
 =======================
-
-* Use responsive avare recipies for image handling
-* Web Editor Tools for end user, choose recipe for your images as you are creating pages
-* Tools for qweb use
-
- https://graphicdesign.stackexchange.com/questions/39430/using-imagemagick-to-create-vibrant-images
 
 
 """,
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
-    'depends': ['base', 'website'],
-    'external_dependencies': {
-        'python': ['wand', ],
-    },
-    'data': [
-        'website_imagemagick_data.xml',
-        'security/ir.model.access.csv',
-        'views/snippet.xml',
-        'views/image_recipe.xml',
+    'depends': ['base', 'website_imagemagick', 'website_sale'],
+    'data': [ 'views/imagemagick_sale.xml', 'website_imagemagick_sale_data.xml'
     ],
-    'application': False,
+    'application': True,
     'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4s:softtabstop=4:shiftwidth=4:

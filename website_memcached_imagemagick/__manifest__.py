@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution, third party addon
+#    Odoo, Open Source Enterprise Management Solution, third party addon
 #    Copyright (C) 2018- Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,10 @@ This module depends on website_memcached
 """,
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
-    'depends': ['website_memcached','website_imagemagick'],
+    'depends': [
+        #~ 'website_memcached',
+        'website_imagemagick'
+    ],
     'data': [],
     'application': False,
 }
