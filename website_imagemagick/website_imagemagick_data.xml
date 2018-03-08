@@ -133,7 +133,7 @@ res = bg
         </record>
         <record id="img_square_thumnail_watermark_left_top_param_wk" model="image.recipe.param">
             <field name="name">wk</field>
-            <field name="value">/usr/share/odoo-addons/addons/base/static/img/main_partner-image.png</field>
+            <field name="value">/usr/share/core-odoo/addons/base/static/img/main_partner-image.png</field>
             <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
         </record>
         <record id="img_square_thumnail_watermark_left_top_param_wk_trans" model="image.recipe.param">
@@ -221,7 +221,7 @@ res = bg
         </record>
         <record id="img_four_three_watermark_right_bottom_param_param_wk" model="image.recipe.param">
             <field name="name">wk</field>
-            <field name="value">/usr/share/odoo-addons/addons/base/static/img/main_partner-image.png</field>
+            <field name="value">/usr/share/core-odoo/addons/base/static/img/main_partner-image.png</field>
             <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
         </record>
         <record id="img_four_three_watermark_right_bottom_param_wk_trans" model="image.recipe.param">

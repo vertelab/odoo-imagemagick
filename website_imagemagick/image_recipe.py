@@ -342,7 +342,7 @@ class image_recipe(models.Model):
         try:
             url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
             if not url:
-                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/fields.jpg')
+                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/odoo.jpg')
                 url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
             self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png').encode('base64')
         except:
