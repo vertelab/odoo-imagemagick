@@ -30,6 +30,7 @@ Sales for images
 
 """,
     'author': 'Vertel AB',
+    'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
     'depends': ['base', 'website_imagemagick', 'website_sale'],
     'data': [ 'views/imagemagick_sale.xml', 'website_imagemagick_sale_data.xml'
