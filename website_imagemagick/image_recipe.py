@@ -41,6 +41,8 @@ from wand.display import display
 from wand.drawing import Drawing
 from wand.color import Color
 import subprocess
+import wand.api
+import ctypes
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -425,6 +427,15 @@ class image_recipe(models.Model):
         #TODO: Remove time import once caching is working
         import time
         company = request.website.company_id if request.website else self.env.user.company_id
+
+        MagickEvaluateImage = wand.api.library.MagickEvaluateImage
+        MagickEvaluateImage.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_double]
+        def convert(self, operation, argument):
+            MagickEvaluateImage(
+                self.wand,
+                wand.image.EVALUATE_OPS.index(operation),
+                self.quantum_range * float(argument))
+
         kwargs.update({
             'time': time,
             'Image': Image,
@@ -438,6 +449,7 @@ class image_recipe(models.Model):
             'http': http,
             'request': request,
             'website': request.website,
+            'convert': convert,
             #~ 'logo': Image(blob=company.logo.decode('base64')),
             #~ 'logo_web': Image(blob=company.logo_web.decode('base64')),
             })
