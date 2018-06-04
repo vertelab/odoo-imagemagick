@@ -35,8 +35,9 @@ class image_recipe(models.Model):
 
     @api.multi
     def write(self, vals):
-        for key in memcached.get_keys(flush_type='imagemagick %s-%s' %(self.name, self.id)):
-            memcached.mc_delete(key)
+        for recipe in self:
+            for key in memcached.get_keys(flush_type='imagemagick %s-%s' %(recipe.name, recipe.id), db=self.env.cr.dbname):
+                memcached.mc_delete(key)
         return super(image_recipe, self).write(vals)
 
 
