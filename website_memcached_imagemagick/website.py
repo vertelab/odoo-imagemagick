@@ -67,3 +67,14 @@ class CachedImageMagick(website_imagemagic):
     @memcached.route(flush_type='imagemagick',binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
     def website_imagemagick(self, model, field, id, recipe=None, **post):
         return super(CachedImageMagick, self).website_imagemagick(model, field, id, recipe, **post)
+
+    # ~ @http.route([
+        # ~ '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file>'
+        # ~ ], type='http', auth="public", website=True, multilang=False)
+    @memcached.route([
+        '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file>'
+        ], type='http', auth="public", website=True, multilang=False,flush_type='imagemagick',binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
+    def website_image_hash(self, model, id, field, recipe_ref, file=None, **post):
+        return super(CachedImageMagick, self).website_image_hash(model, field, id, recipe_ref, **post)
+
+                

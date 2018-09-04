@@ -98,6 +98,12 @@ class website_imagemagic(http.Controller):
         return recipe.sudo().send_file(field=field,model=model,id=id)
 
     @http.route([
+        '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file>'
+        ], type='http', auth="public", website=True, multilang=False)
+    def website_image_hash(self, model, id, field, recipe_ref, file=None, **post):
+        return request.env.ref(recipe_ref).sudo().send_file(field=field,model=model,id=id)
+
+    @http.route([
         '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
         '/imagefieldurl/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
         ], type='http', auth="public", website=True, multilang=False)
@@ -301,6 +307,19 @@ class website(models.Model):
         response.data = data
 
         return response
+
+    @api.model
+    def imagefield_hash(self, model, field, id,recipe):
+        """Returns a local url that points to the image field of a given browse record, run through an imagemagick recipe.
+        """        
+        record = self.env[model].browse(id)
+        sudo_recipe = self.env.ref(recipe).sudo()
+        hashtxt = hashlib.sha1('%s%s' % (record.write_date or record.create_date or '', sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest()[0:7]
+        return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(model=model,field=field,id=id,recipe=recipe,
+                                                                                        file_name='%s%s.%s' % (request.session.get('device_type','md'),hashtxt,sudo_recipe.image_format))
+
+
+
 
 
 class image_recipe_state(models.Model):
