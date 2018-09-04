@@ -147,8 +147,6 @@ class website_imagemagic(http.Controller):
     def placeholder(self, response):
         return request.env['website']._image_placeholder(response)
 
-
-
 #
 # Web Editor tools
 #
@@ -166,11 +164,9 @@ class website_imagemagic(http.Controller):
         if '/website/static/src/img/' in img_src and not '/imageurl' in img_src:
             url = img_src[img_src.find('/website'):]
             return '/imageurl/id/%s?url=%s' %(recipe_id,url)
-
-        if '/website/image/ir.attachment/' in img_src:
-            attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
-        elif '/imagefield/ir.attachment/datas/' in img_src:
-            attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id', img_src).group(1)
+        if '/website/image/' in img_src:
+            pattern = re.search('/website/image/(.*)/(.*)/(.*)', img_src)
+            return '/imagefield/%s/%s/%s/ref/%s' %(pattern.group(1), pattern.group(3), pattern.group(2).split('_')[0], recipe_id)
         elif '/imagemagick/' in img_src:
             attachment_id = re.search('/imagemagick/(.*)/id', img_src).group(1)
             attachment = request.env['ir.attachment'].browse(int(attachment_id if attachment_id.isdigit() else 0))
@@ -179,19 +175,6 @@ class website_imagemagic(http.Controller):
             attachment_id = 0
         attachment = request.env['ir.attachment'].browse(int(attachment_id  if attachment_id.isdigit() else 0))
         return '/imagefield/ir.attachment/datas/%s/id/%s' %(attachment.id, recipe_id)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     #TODO: reset recipe to normal attachment
 
