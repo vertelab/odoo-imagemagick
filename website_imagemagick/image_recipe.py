@@ -88,20 +88,19 @@ class website_imagemagic(http.Controller):
     @http.route([
         '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
         '/imagefield/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
-        #~ '/imageobj/<>/ref/<string:recipe>'
-
         ], type='http', auth="public", website=True, multilang=False)
-    def website_image(self, model, id, field, recipe=None,recipe_ref=None, **post):
+    def website_image(self, model, id, field, recipe=None, recipe_ref=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
-        #~ recipe.send_file(http,field=field,model=model,id=id.split('_')[0])
-        return recipe.sudo().send_file(field=field,model=model,id=id)
+        return recipe.sudo().send_file(field=field, model=model, id=id)
 
     @http.route([
-        '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file>'
+        '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file_name>'
         ], type='http', auth="public", website=True, multilang=False)
-    def website_image_hash(self, model, id, field, recipe_ref, file=None, **post):
-        return request.env.ref(recipe_ref).sudo().send_file(field=field,model=model,id=id)
+    def website_image_hash(self, model, id, field, recipe=None, recipe_ref=None, file_name=None, **post):
+        if recipe_ref:
+            recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
+        return recipe.sudo().send_file(field=field, model=model, id=id)
 
     @http.route([
         '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
@@ -292,14 +291,14 @@ class website(models.Model):
         return response
 
     @api.model
-    def imagefield_hash(self, model, field, id,recipe):
+    def imagefield_hash(self, model, field, id, recipe):
         """Returns a local url that points to the image field of a given browse record, run through an imagemagick recipe.
         """        
         record = self.env[model].browse(id)
         sudo_recipe = self.env.ref(recipe).sudo()
         hashtxt = hashlib.sha1('%s%s' % (record.write_date or record.create_date or '', sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest()[0:7]
         return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(model=model,field=field,id=id,recipe=recipe,
-                                                                                        file_name='%s%s.%s' % (request.session.get('device_type','md'),hashtxt,sudo_recipe.image_format))
+                                                                                        file_name='%s%s%s' % (request.session.get('device_type','md'),hashtxt, sudo_recipe.image_format and ('.%s' % sudo_recipe.image_format) or ''))
 
 
 
