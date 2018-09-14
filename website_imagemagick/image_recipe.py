@@ -97,7 +97,7 @@ class website_imagemagic(http.Controller):
     @http.route([
         '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file_name>'
         ], type='http', auth="public", website=True, multilang=False)
-    def website_image_hash(self, model, id, field, recipe=None, recipe_ref=None, file_name=None, **post):
+    def website_image_hash(self, model, id, field, recipe_ref, file_name=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
         return recipe.sudo().send_file(field=field, model=model, id=id)
