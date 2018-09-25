@@ -293,7 +293,7 @@ class website(models.Model):
     @api.model
     def imagefield_hash(self, model, field, id, recipe):
         """Returns a local url that points to the image field of a given browse record, run through an imagemagick recipe.
-        """        
+        """
         record = self.env[model].browse(id)
         sudo_recipe = self.env.ref(recipe).sudo()
         hashtxt = hashlib.sha1('%s%s' % (record.write_date or record.create_date or '', sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest()[0:7]
@@ -406,7 +406,7 @@ class image_recipe(models.Model):
         if field:
             #o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
             o = self.env[model].sudo().search_read([('id','=',int(id if id.isdigit() else 0))],[field])
-            if not o:
+            if not (o and o[0][field]):
                 return http.send_file(StringIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
             o = o[0]
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
