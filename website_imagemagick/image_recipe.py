@@ -293,15 +293,13 @@ class website(models.Model):
     @api.model
     def imagefield_hash(self, model, field, id, recipe):
         """Returns a local url that points to the image field of a given browse record, run through an imagemagick recipe.
+
         """
-        record = self.env[model].browse(id)
+        record = self.env[model].sudo().browse(id)
         sudo_recipe = self.env.ref(recipe).sudo()
-        hashtxt = hashlib.sha1('%s%s' % (record.write_date or record.create_date or '', sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest()[0:7]
+        hashtxt = hashlib.sha1('%s%s%s%s%s' % (record.write_date or record.create_date or '', sudo_recipe.write_date or sudo_recipe.create_date or '',model,id,sudo_recipe.id)).hexdigest()[0:7]
         return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(model=model,field=field,id=id,recipe=recipe,
-                                                                                        file_name='%s%s%s' % (request.session.get('device_type','md'),hashtxt, sudo_recipe.image_format and ('.%s' % sudo_recipe.image_format) or ''))
-
-
-
+                                                                                        file_name='%s%s%s' % (request.session.get('device_type','md'),hashtxt, sudo_recipe.image_format and ('.%s' % sudo_recipe.image_format) or '.jpeg'))
 
 
 class image_recipe_state(models.Model):
@@ -402,21 +400,21 @@ class image_recipe(models.Model):
         return self.write_date
 
     def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
-        mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
+        mimetype = 'image/%s' % (self.image_format or 'png')
         if field:
             #o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
             o = self.env[model].sudo().search_read([('id','=',int(id if id.isdigit() else 0))],[field])
             if not (o and o[0][field]):
-                return http.send_file(StringIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
+                return http.send_file(StringIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format or 'png')), mimetype=mimetype)
             o = o[0]
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
             #return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field, mtime=self.get_mtime(o))
-            return http.send_file(StringIO(self.run(Image(blob=o[field].decode('base64'))).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field)
+            return http.send_file(StringIO(self.run(Image(blob=o[field].decode('base64'))).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=field)
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
-            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
         #~ return http.send_file(self.run(self.url_to_img(url)), filename=url)
-        return http.send_file(StringIO(self.run(Image(filename=url)).make_blob(format=self.image_format if self.image_format else 'png')),mimetype=mimetype)
+        return http.send_file(StringIO(self.run(Image(filename=url)).make_blob(format=self.image_format or 'png')),mimetype=mimetype)
 
 
     def run(self, image, **kwargs):   # return a image with specified recipe

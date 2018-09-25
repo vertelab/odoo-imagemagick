@@ -36,7 +36,7 @@ class image_recipe(models.Model):
     @api.multi
     def write(self, vals):
         for recipe in self:
-            for key in memcached.get_keys(flush_type='imagemagick %s-%s' %(recipe.name, recipe.id), db=self.env.cr.dbname):
+            for key in memcached.get_keys(flush_type='imagemagick %s-%s' %(recipe.name.encode('ascii', 'replace'), recipe.id), db=self.env.cr.dbname):
                 memcached.mc_delete(key)
         return super(image_recipe, self).write(vals)
 
@@ -46,10 +46,10 @@ class Website(models.Model):
 
     def get_kw_imagemagick(self, kw):
         if kw.get('recipe', None):
-            return '%s-%s' %(kw['recipe'].name, kw['recipe'].id)
+            return '%s-%s' %(kw['recipe'].name.encode('ascii', 'replace'), kw['recipe'].id)
         if kw.get('recipe_ref', None):
             recipe = self.env.ref(kw['recipe_ref'])
-            return '%s-%s' %(recipe.name, recipe.id)
+            return '%s-%s' %(recipe.name.encode('ascii', 'replace'), recipe.id)
         return ''
 
 
