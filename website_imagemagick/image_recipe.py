@@ -297,10 +297,15 @@ class website(models.Model):
         """
         record = self.env[model].sudo().browse(id)
         sudo_recipe = self.env.ref(recipe).sudo()
-        hashtxt = hashlib.sha1('%s%s%s%s%s' % (record.write_date or record.create_date or '', sudo_recipe.write_date or sudo_recipe.create_date or '',model,id,sudo_recipe.id)).hexdigest()[0:7]
-        return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(model=model,field=field,id=id,recipe=recipe,
-                                                                                        file_name='%s%s%s' % (request.session.get('device_type','md'),hashtxt, sudo_recipe.image_format and ('.%s' % sudo_recipe.image_format) or '.jpeg'))
-
+        hashtxt = hashlib.sha1('%s%s%s%s%s' % (
+            record.write_date or record.create_date or '',
+            sudo_recipe.write_date or sudo_recipe.create_date or '',
+            model, id, sudo_recipe.id)).hexdigest()[0:7]
+        return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(
+            model=model, field=field, id=id, recipe=recipe,
+            file_name='%s-%s.%s' % (
+                request.session.get('device_type','md'),
+                hashtxt, sudo_recipe.image_format or 'jpeg'))
 
 class image_recipe_state(models.Model):
     _name = 'image.recipe.state'
