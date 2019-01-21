@@ -57,13 +57,13 @@ class CachedImageMagick(website_imagemagic):
 
     #~ @http.route(['/imagemagick/<model("ir.attachment"):image>/id/<model("image.recipe"):recipe>',
                  #~ '/imagemagick/<model("ir.attachment"):image>/ref/<string:recipe_id>'], type='http', auth="public", website=True)
-    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw) ,binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
+    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw) ,binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, s_maxage=60*60*24*30,cache_age=60*60*24*30)
     def view_attachment(self, image=None, recipe=None, recipe_ref=None, **post):
         return super(CachedImageMagick, self).view_attachment(image, recipe, recipe_ref, **post)
 
 
     #~ @http.route(['/imageurl/<string:url>/id/<model("image.recipe"):recipe>','/imageurl/<string:url>/ref/<string:recipe>'], type='http', auth="public", website=True)
-    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
+    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, s_maxage=60*60*24*30,cache_age=60*60*24*30)
     def view_url(self, url=None, recipe=None, recipe_ref=None, **post):
         return super(CachedImageMagick, self).view_url(recipe, recipe_ref, **post)
 
@@ -71,7 +71,7 @@ class CachedImageMagick(website_imagemagic):
         #~ '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
         #~ '/imagefield/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
         #~ ], type='http', auth="public", website=True, multilang=False)
-    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
+    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, s_maxage=60*60*24*30,cache_age=60*60*24*30)
     def website_image(self, model, id, field, recipe=None,recipe_ref=None, **post):
         return super(CachedImageMagick, self).website_image(model, id, field, recipe,recipe_ref, **post)
 
@@ -79,7 +79,7 @@ class CachedImageMagick(website_imagemagic):
         #~ '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
         #~ '/imagefieldurl/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
         #~ ], type='http', auth="public", website=True, multilang=False)
-    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
+    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, s_maxage=60*60*24*30,cache_age=60*60*24*30)
     def website_url(self, model, id, field, recipe=None,recipe_ref=None, **post):
         return super(CachedImageMagick, self).website_url(model, id, field, recipe,recipe_ref, **post)
 
@@ -87,13 +87,13 @@ class CachedImageMagick(website_imagemagic):
     #~ @http.route([
         #~ '/website/imagemagick/<model>/<field>/<id>/<model("image.recipe"):recipe>',
         #~ ], type='http', auth="public", website=True, multilang=False)
-    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, cache_age=60*60*24*30)
+    @memcached.route(flush_type=lambda kw: 'imagemagick %s' %request.website.get_kw_imagemagick(kw), binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, s_maxage=60*60*24*30,cache_age=60*60*24*30)
     def website_imagemagick(self, model, field, id, recipe=None, **post):
         return super(CachedImageMagick, self).website_imagemagick(model, field, id, recipe, **post)
 
 
     @memcached.route([
         # ~ '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file_name>'
-        ], flush_type=lambda kw: 'imagemagick', no_cache=False, must_revalidate=False, proxy_revalidate=False, binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, s_maxage=60, cache_age=60*60*24*30)
+        ], flush_type=lambda kw: 'imagemagick', no_cache=False, must_revalidate=False, proxy_revalidate=False, binary=True, key=lambda k: '{db},{path},{lang},{device_type}', max_age=31536000, s_maxage=60*60*24*30, cache_age=60*60*24*30)
     def website_image_hash(self, model, id, field, recipe_ref, file_name=None, **post):
         return super(CachedImageMagick, self).website_image_hash(model, id, field, recipe_ref, **post)
