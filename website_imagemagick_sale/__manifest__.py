@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution, third party addon
-#    Copyright (C) 2018- Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Management Solution, third party addon
+#    Copyright (C) 2004-2019 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,20 +20,22 @@
 ##############################################################################
 
 {
-    'name': 'Website MemCached ImageMagick',
-    'version': '1.0',
-    'category': 'other',
-    'summary': 'website acceleration for imagemagick using memcached',
+    'name': 'Image Magick Sale',
+    'version': '0.2',
+    'category': 'Tools',
     'description': """
-Add mechanisms to cache rendered images
-This module depends on website_memcached
+Sales for images
+=======================
+
 
 """,
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
-    'depends': ['website_memcached','website_imagemagick'],
-    'data': [],
-    'application': False,
+    'depends': ['base', 'website_imagemagick', 'website_sale'],
+    'data': [ 'views/imagemagick_sale.xml', 'website_imagemagick_sale_data.xml'
+    ],
+    'application': True,
+    'installable': True,
 }
-
+# vim:expandtab:smartindent:tabstop=4s:softtabstop=4:shiftwidth=4:

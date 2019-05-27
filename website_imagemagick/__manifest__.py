@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2016 Vertel AB (<http://vertel.se>).
+#    Odoo, Open Source Management Solution, third party addon
+#    Copyright (C) 2004-2019 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,8 +20,8 @@
 ##############################################################################
 
 {
-    'name': 'Image Magic',
-    'version': '0.1',
+    'name': 'Image Magick',
+    'version': '0.2',
     'category': 'Tools',
     'licence': 'AGPL-3',
     'description': """
@@ -40,7 +40,7 @@ Advanced Image handling
     'website': 'http://www.vertel.se',
     'depends': ['base', 'website'],
     'external_dependencies': {
-        'python': ['wand', ],
+        'python3': ['wand', ],
     },
     'data': [
         'website_imagemagick_data.xml',

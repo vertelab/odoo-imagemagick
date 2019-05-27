@@ -1,1 +1,2 @@
 import image_recipe
+import image_recipe_controller
