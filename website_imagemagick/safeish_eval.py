@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Odoo, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2019 Vertel AB (<http://vertel.se>).
+#    OpenERP, Open Source Management Solution, third party addon
+#    Copyright (C) 2004-2017 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -19,9 +19,9 @@
 #
 ##############################################################################
 
-import odoo
-from odoo.tools.safe_eval import _SAFE_OPCODES, test_expr, _import
-from odoo.tools.misc import ustr
+import openerp
+from openerp.tools.safe_eval import _SAFE_OPCODES, test_expr, _import
+from openerp.tools.misc import ustr
 from opcode import opmap
 from psycopg2 import OperationalError
 from types import CodeType

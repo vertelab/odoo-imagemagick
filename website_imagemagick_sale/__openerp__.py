@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 ##############################################################################
 #
-#    Odoo, Open Source Management Solution, third party addon
-#    Copyright (C) 2004-2019 Vertel AB (<http://vertel.se>).
+#    OpenERP, Open Source Management Solution, third party addon
+#    Copyright (C) 2004-2015 Vertel AB (<http://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,20 +20,20 @@
 ##############################################################################
 
 {
-    'name': 'Imagemagick Cropper',
-    'version': '0.2',
+    'name': 'Image Magic Sale',
+    'version': '0.1',
     'category': 'Tools',
     'description': """
-Crop images
-===========
+Sales for images
+=======================
+
 
 """,
     'author': 'Vertel AB',
     'license': 'AGPL-3',
     'website': 'http://www.vertel.se',
-    'depends': ['website_imagemagick'],
-    'data': [
-        'imagemagick_cropper_view.xml',
+    'depends': ['base', 'website_imagemagick', 'website_sale'],
+    'data': [ 'views/imagemagick_sale.xml', 'website_imagemagick_sale_data.xml'
     ],
     'application': True,
     'installable': True,
