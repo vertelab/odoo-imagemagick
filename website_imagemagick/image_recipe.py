@@ -74,7 +74,7 @@ class website_imagemagic(http.Controller):
                 'datas', werkzeug.wrappers.Response(),250,250,cache=STATIC_CACHE)
 
     # this controller will control url: /image/id/<id>?url=<your url>
-    @http.route(['/imageurl/id/<model("image.recipe"):recipe>','/imageurl/ref/<string:recipe_ref>'], type='http', auth="public", website=True)
+    @http.route(['/imageurl/id/<model("image.recipe"):recipe>', '/imageurl/ref/<string:recipe_ref>'], type='http', auth="public", website=True)
     def view_url(self, recipe=None, recipe_ref=None, **post):
         url = post.get('url','')
         if len(url)>0 and url[0] == '/':
@@ -106,13 +106,13 @@ class website_imagemagic(http.Controller):
         '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
         '/imagefieldurl/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
         ], type='http', auth="public", website=True, multilang=False)
-    def website_url(self, model, id, field, recipe=None,recipe_ref=None, **post):
+    def website_url(self, model, id, field, recipe=None, recipe_ref=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref)
         o = request.env[model].browse(int(id))
         url = getattr(o, field).strip()
         attachment_id = int(url.split('/')[6].split('_')[0])
-        return recipe.send_file(field='datas',model='ir.attachment',id=attachment_id)
+        return recipe.send_file(field='datas', model='ir.attachment', id=attachment_id)
 
     @http.route([
         '/website/imagemagick/<model>/<field>/<id>/<model("image.recipe"):recipe>',
