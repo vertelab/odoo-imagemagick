@@ -23,8 +23,8 @@ import openerp
 from openerp import http
 from openerp.addons.web.http import request
 from openerp.addons.website_memcached import memcached
-
 from openerp.addons.website_imagemagick.image_recipe import website_imagemagic
+import hashlib
 
 import logging
 _logger = logging.getLogger(__name__)
