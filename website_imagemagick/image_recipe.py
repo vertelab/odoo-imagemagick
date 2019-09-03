@@ -301,10 +301,14 @@ class website(models.Model):
             record.write_date or record.create_date or '',
             sudo_recipe.write_date or sudo_recipe.create_date or '',
             model, id, sudo_recipe.id)).hexdigest()[0:7]
+        try:
+            device_type = request.session.get('device_type','md')
+        except:
+            device_type = 'md'
         return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(
             model=model, field=field, id=id, recipe=recipe,
             file_name='%s-%s.%s' % (
-                request.session.get('device_type','md'),
+                device_type,
                 hashtxt, sudo_recipe.image_format or 'jpeg'))
 
 class image_recipe_state(models.Model):
