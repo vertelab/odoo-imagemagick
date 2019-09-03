@@ -117,7 +117,7 @@ class website(models.Model):
             times.append(kw['image'].memcached_time)
             res['attachment_id'] = kw['image'].id
         if 'model' in kw and 'id' in kw and 'field' in kw:
-            obj = self.env[kw['model']]
+            obj = self.env[kw['model']].sudo()
             fname = self.memcached_get_model_time_field(obj)
             if fname:
                 times.append((obj.search_read([('id', '=', kw['id'])], [fname]) or [{fname: ''}])[0][fname] or '')
