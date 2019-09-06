@@ -1,1 +1,1 @@
-import imagemagick_cropper
+from . import imagemagick_cropper

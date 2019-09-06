@@ -24,25 +24,23 @@
         </template>
 -->
         <!-- Web Editor Tools -->
+<!--
         <template id="website_imagemagick_snippet_options" inherit_id="website.snippet_options" name="Website Imagemagick Snippet Options">
-            <xpath expr="//li[@data-choose_image='choose_image']" position="after">
+            <xpath expr="//a[hasclass('snippet-option-background')]" position="after">
                 <t t-set="recipes" t-value="request.env['image.recipe'].search([('website_published', '=', True)])" />
-                <t t-if="len(recipes)&gt;0">
-                    <li class="dropdown-submenu">
-                        <a tabindex="-1" href="#">Imagemagick Recipes</a>
-                        <ul class="dropdown-menu" name="imagemagick-recipe">
+                <t t-if="recipes">
+                    <div id="so_main_recepiepicker" class="dropdown-submenu snippet-option-undefined">
+                        <a tabindex="-1" href="#" class="dropdown-item"><i class="fa fa-crop"/>Imagemagick Recipes</a>
+                        <div class="dropdown-menu" role="menu">
                             <t t-foreach="recipes" t-as="recipe">
-                                <li t-att-data-value="recipe.id" class="choose_recipe">
-                                    <a>
-                                        <t t-esc="recipe.name" />
-                                    </a>
-                                </li>
+                                <a class="dropdown-item" href="#" role="menuitem"><t t-esc="recipe.name" /></a>
                             </t>
-                        </ul>
-                    </li>
+                        </div>
+                    </div>
                 </t>
             </xpath>
         </template>
+-->
         <template id="website_imagemagick_snippet_option_assets_frontend" inherit_id="website.assets_frontend" name="Website Imagemagick Snippet Option Access Frontend">
             <xpath expr="." position="inside">
                 <script type="text/javascript" src="/website_imagemagick/static/src/js/main.js" />

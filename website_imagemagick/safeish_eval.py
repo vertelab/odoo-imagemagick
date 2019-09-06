@@ -19,7 +19,7 @@
 #
 ##############################################################################
 
-import openerp
+import odoo
 from odoo.tools.safe_eval import _SAFE_OPCODES, test_expr, _import
 from odoo.tools.misc import ustr
 from opcode import opmap
@@ -115,21 +115,21 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
     c = test_expr(expr, _SAFE_OPCODES, mode=mode)
     try:
         return eval(c, globals_dict, locals_dict)
-    except openerp.osv.orm.except_orm:
+    except odoo.osv.orm.except_orm:
         raise
-    except openerp.exceptions.Warning:
+    except odoo.exceptions.Warning:
         raise
-    except openerp.exceptions.RedirectWarning:
+    except odoo.exceptions.RedirectWarning:
         raise
-    except openerp.exceptions.AccessDenied:
+    except odoo.exceptions.AccessDenied:
         raise
-    except openerp.exceptions.AccessError:
+    except odoo.exceptions.AccessError:
         raise
     except OperationalError:
         # Do not hide PostgreSQL low-level exceptions, to let the auto-replay
         # of serialized transactions work its magic
         raise
-    except Exception, e:
+    except Exception as e:
         import sys
         exc_info = sys.exc_info()
-        raise ValueError, '"%s" while evaluating\n%r' % (ustr(e), expr), exc_info[2]
+        raise ValueError('"%s" while evaluating\n%r' % (ustr(e), expr), exc_info[2])

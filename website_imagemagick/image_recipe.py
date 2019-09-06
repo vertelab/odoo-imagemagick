@@ -19,7 +19,7 @@
 #
 ##############################################################################
 import base64
-from cStringIO import StringIO
+from io import StringIO
 from odoo import models, fields, api, _
 from odoo.exceptions import except_orm, Warning, RedirectWarning
 from odoo import http
@@ -267,7 +267,7 @@ class website(models.Model):
         concurrency = '__last_update'
         record = record.sudo()
         if hasattr(record, concurrency):
-            server_format = openerp.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT
+            server_format = odoo.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT
             try:
                 response.last_modified = datetime.datetime.strptime(
                     getattr(record, concurrency), server_format + '.%f')
@@ -344,9 +344,10 @@ class image_recipe(models.Model):
         try:
             url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
             if not url:
-                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/odoo.jpg')
+                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/snippets_demo/s_banner.jpg')
                 url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
-            self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png').encode('base64')
+            self.image = self.run(
+                self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png').encode('base64')
         except:
             e = sys.exc_info()
             message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
@@ -426,7 +427,7 @@ class image_recipe(models.Model):
         kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
-        company = request.website.company_id if request.website else self.env.user.company_id
+        company = request.website_id.company_id if request.website_id else self.env.user.company_id
 
         MagickEvaluateImage = wand.api.library.MagickEvaluateImage
         MagickEvaluateImage.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_double]
