@@ -48,7 +48,7 @@ Define the background color with hex.
 bg.blank(width=int(canvas_size), height=int(canvas_size), background=Color(bg_color))
 bg.format = 'png'
 image.transform(resize='%sx%s' %(int(canvas_size), int(canvas_size)))
-bg.composite(image, (int(canvas_size)-image.width)/2, (int(canvas_size)-image.height)/2)
+bg.composite(image, int((int(canvas_size) - image.width) / 2), int((int(canvas_size) - image.height) / 2))
 res = bg
             </field>
         </record>
@@ -95,7 +95,7 @@ PS: The canvas will always be the given size</field>
 bg.blank(width=int(canvas_size), height=int(canvas_size), background=Color(bg_color))
 bg.format = 'png'
 image.transform(resize='%sx%s' %(int(canvas_size), int(canvas_size)))
-bg.composite(image, (int(canvas_size)-image.width)/2, (int(canvas_size)-image.height)/2)
+bg.composite(image, int((int(canvas_size) - image.width) / 2), int((int(canvas_size) - image.height) / 2))
 wk_img = Image(filename=wk)
 wk_img.transform(resize='%sx%s' %(int(wk_canvas_size), (int(wk_canvas_size))))
 bg.watermark(wk_img, transparency=float(wk_trans), left=int(wk_margin_to_frame), top=int(wk_margin_to_frame))
@@ -173,7 +173,7 @@ else:
         image.transform(resize='%sx%s&gt;' %(int(float(height)/float(vertical)*float(horizontal)), int(height)))
     else:
         image.transform(resize='%sx&gt;' %image.width)
-bg.composite(image, (int(float(height)/float(vertical)*float(horizontal))-image.width)/2, (int(height)-image.height)/2)
+bg.composite(image, int((float(height) / float(vertical) * float(horizontal) - image.width) / 2), int((int(height) - image.height) / 2))
 wk_img = Image(filename=wk)
 wk_img.transform(resize='%sx%s' %(int(wk_canvas_width), (int(wk_canvas_height))))
 bg.watermark(wk_img, transparency=float(wk_trans), left=bg.width-wk_img.width-int(wk_margin_to_frame), top=bg.height-wk_img.height-int(wk_margin_to_frame))

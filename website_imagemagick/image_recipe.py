@@ -19,7 +19,7 @@
 #
 ##############################################################################
 import base64
-from io import StringIO
+from io import StringIO, BytesIO
 from odoo import models, fields, api, _
 from odoo.exceptions import except_orm, Warning, RedirectWarning
 from odoo import http
@@ -32,6 +32,7 @@ import re
 import hashlib
 import sys
 import traceback
+import codecs
 
 from .safeish_eval import safe_eval as eval
 
@@ -62,7 +63,7 @@ class Image(Image):
 
 class website_imagemagic(http.Controller):
 
-    # this controller will control url: /image/image_id/magic/recipe_id
+    # this controller will control url: /imagemagick/attachment_id/id/recipe_id or /imagemagick/attachment_id/ref/recipe_ref
     @http.route(['/imagemagick/<model("ir.attachment"):image>/id/<model("image.recipe"):recipe>',
                  '/imagemagick/<model("ir.attachment"):image>/ref/<string:recipe_id>'], type='http', auth="public", website=True)
     def view_attachment(self, image=None, recipe=None, recipe_ref=None, **post):
@@ -74,7 +75,7 @@ class website_imagemagic(http.Controller):
                 request.cr, request.uid, 'ir.attachment','%s_%s' % (image.id, hashlib.sha1(image.sudo().write_date or image.sudo().create_date or '').hexdigest()[0:7]),
                 'datas', werkzeug.wrappers.Response(),250,250,cache=STATIC_CACHE)
 
-    # this controller will control url: /image/id/<id>?url=<your url>
+    # this controller will control url: /imageurl/id/<recipe_id>?url=<your url> or /imageurl/ref/<recipe_ref>?url=<your url>
     @http.route(['/imageurl/id/<model("image.recipe"):recipe>', '/imageurl/ref/<string:recipe_ref>'], type='http', auth="public", website=True)
     def view_url(self, recipe=None, recipe_ref=None, **post):
         url = post.get('url','')
@@ -86,6 +87,7 @@ class website_imagemagic(http.Controller):
             return recipe.send_file(url='/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)
         return http.send_file(StringIO(recipe.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=recipe.image_format if recipe.image_format else 'png')))
 
+    # this controller will control url: /imagefield/model_id/field_id/obj_id/ref/recipe_ref or /imagefield/model_id/field_id/obj_id/id/recipe_id
     @http.route([
         '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>',
         '/imagefield/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
@@ -93,36 +95,25 @@ class website_imagemagic(http.Controller):
     def website_image(self, model, id, field, recipe=None, recipe_ref=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
-        #~ recipe.send_file(http, field=field, model=model, id=id.split('_')[0])
-        return recipe.send_file(field=field, model=model, id=id)
+        return recipe.send_file(field=field, model=model, id=int(id))
 
+    # this controller will control url: /imagefield/model_id/field_id/ref/recipe_ref/image/file_name
     @http.route([
         '/imagefield/<model>/<field>/<id>/ref/<recipe_ref>/image/<file_name>'
         ], type='http', auth="public", website=True, multilang=False)
     def website_image_hash(self, model, id, field, recipe_ref, file_name=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
-        return recipe.send_file(field=field, model=model, id=id)
+        return recipe.send_file(field=field, model=model, id=int(id))
 
-    @http.route([
-        '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
-        '/imagefieldurl/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
-        ], type='http', auth="public", website=True, multilang=False)
-    def website_url(self, model, id, field, recipe=None, recipe_ref=None, **post):
-        if recipe_ref:
-            recipe = request.env.ref(recipe_ref)
-        o = request.env[model].browse(int(id))
-        url = getattr(o, field).strip()
-        attachment_id = int(url.split('/')[6].split('_')[0])
-        return recipe.send_file(field='datas', model='ir.attachment', id=attachment_id)
-
+    # this controller will control url: /website/imagemagick/model_id/field_id/obj_id/recipe_id
     @http.route([
         '/website/imagemagick/<model>/<field>/<id>/<model("image.recipe"):recipe>',
         ], type='http', auth="public", website=True, multilang=False)
     def website_imagemagick(self, model, field, id, recipe=None, **post):
         try:
             idsha = id.split('_')
-            id = idsha[0]
+            id = int(idsha[0])
             response = werkzeug.wrappers.Response()
             return request.env['website']._imagemagick(
                 model, id, field, recipe, response,
@@ -146,7 +137,14 @@ class website_imagemagic(http.Controller):
     """
 
     def placeholder(self, response):
-        return request.env['website']._image_placeholder(response)
+        # ~ return request.env['website']._image_placeholder(response)
+        f = open(get_module_path('web') + '/static/src/img/placeholder.png', 'rb')
+        # ~ asd = Image(file=f, format='PNG')
+        response.mimetype = 'image/png'
+        filename = 'placeholder.png'
+        response.headers['Content-Disposition'] = 'inline; filename="%s"' % filename
+        response.data = f.read()
+        return response.make_conditional(request.httprequest)
 
 #
 # Web Editor tools
@@ -216,8 +214,8 @@ class website(models.Model):
             sudo_recipe = self.env['image.recipe'].browse(recipe).sudo()
         else:
             sudo_recipe = recipe.sudo()
-        id = '%s_%s' % (record.id, hashlib.sha1('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
-            sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest())
+        id = '%s_%s' % (record.id, hashlib.sha1(('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
+            sudo_recipe.write_date or sudo_recipe.create_date or '')).encode('utf-8')).hexdigest())
         return '/website/imagemagick/%s/%s/%s/%s' % (model, field, id, sudo_recipe.id)
 
     # WIP. Very temporary solution.
@@ -236,7 +234,6 @@ class website(models.Model):
         The requested field is assumed to be base64-encoded image data in
         all cases.
         """
-        _logger.warn('\n\n\nfoobar')
         user = self.env['res.users'].browse(self._uid)
         o = self.env[model].sudo().browse(int(id))
         if o.check_access_rights('read', raise_exception=False):
@@ -252,7 +249,7 @@ class website(models.Model):
                                 [('id', '=', id),
                                 ('website_published', '=', True)])
         if not len(record) > 0:
-            return self._image_placeholder(response)
+            return self.env['website_imagemagick'].placeholder(response)
 
         concurrency = '__last_update'
         record = record.sudo()
@@ -269,7 +266,7 @@ class website(models.Model):
         # Field does not exist on model or field set to False
         if not hasattr(record, field) and getattr(record, field) and recipe:
             # FIXME: maybe a field which does not exist should be a 404?
-            return self._image_placeholder(response)
+            return self.env['website_imagemagick'].placeholder(response)
 
         #TODO: Keep format of original image.
         img = recipe.run(Image(blob=getattr(record, field).decode('base64'))).make_blob() #format='jpg')
@@ -317,10 +314,12 @@ class image_recipe(models.Model):
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
+    
     @api.one
     def _default_state_id(self):
         return self.env.ref('website_imagemagick.image_recipe_state_draft').id if self.env.ref('website_imagemagick.image_recipe_state_draft') else None
     state_id = fields.Many2one(comodel_name='image.recipe.state', string='State' ) # , default=_default_state_id)
+    
     @api.one
     def _params(self):
         self.param_list = ','.join(self.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
@@ -336,8 +335,8 @@ class image_recipe(models.Model):
             if not url:
                 self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/snippets_demo/s_banner.jpg')
                 url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
-            self.image = self.run(
-                self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png').encode('base64')
+            self.image = codecs.encode(self.run(
+                self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png'),'base64')
         except:
             e = sys.exc_info()
             message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
@@ -373,51 +372,68 @@ class image_recipe(models.Model):
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 
+    @api.multi
     def attachment_to_img(self, attachment):  # return an image object while filename is an attachment
         if attachment.url:  # make image url as /module_path/attachment_url and use it as filename
             path = '/'.join(get_module_path(attachment.url.split('/')[1]).split('/')[0:-1])
             return Image(filename=path + attachment.url)
         #_logger.warning('<<<<<<<<<<<<<< attachment_to_img >>>>>>>>>>>>>>>>: %s' % attachment.datas)
-        return Image(blob=attachment.datas.decode('base64'))
+        return Image(blob=codecs.decode(attachment.datas, 'base64'))
 
+    @api.multi
     def data_to_img(self, data):  # return an image object while filename is data
         #_logger.warning('<<<<<<<<<<<<<< data_to_img >>>>>>>>>>>>>>>>: %s' % data)
         if data:
             return Image(blob=data.decode('base64'))
         return Image(filename='/'.join(get_module_path('/web/static/src/img/foo.png'.split('/')[1]).split('/')[0:-1]) + '/web/static/src/img/placeholder.png')
 
+    @api.multi
     def url_to_img(self, url):  # return an image object while filename is an url
         return Image(filename=url)
-
+    
+    @api.multi
     def get_mtime(self, attachment):    # return a last modified time of an image
         if attachment.write_date > self.write_date:
             return attachment.write_date
         return self.write_date
 
+    @api.multi
     def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
-        mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
+        # ~ mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
+        mimetype = self.get_mimetype(attachment, model, field, id)
         if field:
             #o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
-            o = self.env[model].sudo().search_read([('id','=',int(id if id.isdigit() else 0))],[field])
+            o = self.env[model].sudo().search_read([('id','=',id)],[field])
             if not o:
-                return http.send_file(StringIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
+                return http.send_file(BytesIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
             o = o[0]
             #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
-            #return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field, mtime=self.get_mtime(o))
-            return http.send_file(StringIO(self.run(Image(blob=o[field].decode('base64'))).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field)
+            return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=field)
+
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
-            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            # ~ return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            return http.send_file(BytesIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
         #~ return http.send_file(self.run(self.url_to_img(url)), filename=url)
-        return http.send_file(StringIO(self.run(Image(filename=url)).make_blob(format=self.image_format if self.image_format else 'png')),mimetype=mimetype)
+        return http.send_file(BytesIO(self.run(Image(filename=url)).make_blob(format=self.image_format or 'png')),mimetype=mimetype)
 
-
+    @api.multi
+    def get_mimetype(self, attachment=None, model=None, field=None, id=None):
+        res = 'image/%s' % (self.image_format if self.image_format else 'png')
+        if attachment and attachment.mimetype:
+            res = attachment.mimetype
+        if model == 'ir.attachment' and field == 'datas':
+            res = self.env[model].browse(id).mimetype
+        return res
+        
+    @api.multi
     def run(self, image, **kwargs):   # return a image with specified recipe
         kwargs.update({p.name: p.value for p in self.param_ids})
         kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
-        company = request.website_id.company_id if request.website_id else self.env.user.company_id
+        # ~ company = request.website_id.company_id if request.website_id else self.env.user.company_id
+        company = self.env.user.company_id
 
         MagickEvaluateImage = wand.api.library.MagickEvaluateImage
         MagickEvaluateImage.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_double]
@@ -439,7 +455,7 @@ class image_recipe(models.Model):
             'record': kwargs.get('record',None),
             'http': http,
             'request': request,
-            'website': request.website,
+            # ~ 'website': request.website,
             'convert': convert,
             #~ 'logo': Image(blob=company.logo.decode('base64')),
             #~ 'logo_web': Image(blob=company.logo_web.decode('base64')),
