@@ -20,9 +20,9 @@
 ##############################################################################
 
 {
-    'name': 'Image Magic',
-    'version': '0.1',
-    'category': 'Tools',
+    'name': 'Image Magick',
+    'version': '1.0',
+    'category': 'Website',
     'licence': 'AGPL-3',
     'description': """
 Advanced Image handling
@@ -48,7 +48,7 @@ Advanced Image handling
         'views/snippet.xml',
         'views/image_recipe.xml',
     ],
-    'application': False,
+    'application': True,
     'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4s:softtabstop=4:shiftwidth=4:

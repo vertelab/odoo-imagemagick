@@ -45,12 +45,12 @@ Variables:
 
 Variable | Description | Expected type
 --- | --- | ---
-<attachment_id>			| id of an attachment. 								| Int			
-<field_name>			| Technical name of the field on the model. 		| Str			
-<file_name>				| Only used to make url unique.						| Str
-<image_url>				| Path to the image. Only supports local paths.		| Str			
-<model_name>			| Technical name of the model. 						| Str			
-<obj_hash>				| Hash id of the object, also supports id. 			| Str or Int	
-<obj_id>				| id of an object from selected model				| Int			
-<recipe_id>				| id of an recipe									| Int			
-<recipe_ref>			| External id of an recipe							| Str or Int	
+ <attachment_id>			| id of an attachment. 								| Int			
+ <field_name>				| Technical name of the field on the model. 		| Str			
+ <file_name>				| Only used to make url unique.						| Str
+ <image_url>				| Path to the image. Only supports local paths.		| Str			
+ <model_name>				| Technical name of the model. 						| Str			
+ <obj_hash>					| Hash id of the object, also supports id. 			| Str or Int	
+ <obj_id>					| id of an object from selected model				| Int			
+ <recipe_id>				| id of an recipe									| Int			
+ <recipe_ref>				| External id of an recipe							| Str or Int	

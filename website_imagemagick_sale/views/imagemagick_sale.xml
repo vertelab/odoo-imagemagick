@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-
-        <template id="products_item" inherit_id="website_sale.products_item">
-            <xpath expr="//img[@itemprop='image']" position="replace">
-                <img itemprop="image" class="img img-responsive" t-att-src="website.imagemagick_url(product, 'image', 'website_imagemagick_sale.im_shop_grid' if product_image_big else 'website_imagemagick_sale.im_shop_list')" t-att-alt="product.name"/>
-            </xpath>
-        </template>
-
         <template id="product" inherit_id="website_sale.product">
-            <xpath expr="//span[@itemprop='image']" position="replace">
-                <img itemprop="image" class="img img-responsive" t-att-src="website.imagemagick_url(product, 'image', 'website_imagemagick_sale.im_shop_single')" t-att-alt="product.name"/>
+            <xpath expr="//div[@id='o-carousel-product']" position="replace">
+                <img t-att-src="website.imagemagick_url(env['ir.attachment'].search([('res_id','=',product.id),('res_model','=','product.template')])[0], 'datas', 12)" class="img img-fluid product_detail_img" t-att-alt="product.name" data-zoom="1" data-zoom-image="image"/>
+            </xpath>
+        </template>
+        
+        <template id="products_item" inherit_id="website_sale.products_item">
+            <xpath expr="//span[@t-field='product.image']" position="replace">
+                <img t-att-src="website.imagemagick_url(env['ir.attachment'].search([('res_id','=',product.id),('res_model','=','product.template')])[0], 'datas', 11)" class="img img-fluid"/>
             </xpath>
         </template>
 
+        <template id="website_sale.shop_product_carousel">
+            <img t-att-src="website.imagemagick_url(env['ir.attachment'].search([('res_id','=',product.id),('res_model','=','product.template')])[0], 'datas', 12)" class="img img-fluid product_detail_img" t-att-alt="product.name" data-zoom="1" data-zoom-image="image"/>
+        </template>
     </data>
 </odoo>
