@@ -3,7 +3,7 @@ advanced image management
 
 This module requied a python library called Wand. Install Wand to your machine by using:
 
-	$ sudo apt-get install libmagickwand-dev
+	$ sudo apt install libmagickwand-dev
 	
 	$ sudo pip3 install Wand
 
