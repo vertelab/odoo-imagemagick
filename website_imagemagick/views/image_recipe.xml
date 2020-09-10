@@ -151,9 +151,8 @@
         <!-- recipe action window -->
         <record id="action_image_recipe_all_view" model="ir.actions.act_window">
             <field name="name">Image Recipe</field>
-            <field name="type">ir.actions.act_window</field>
             <field name="res_model">image.recipe</field>
-            <field name="view_type">form</field>
+            <field name="binding_view_types">form</field>
             <field name="view_mode">kanban,tree,form</field>
             <field name="view_id" ref="image_recipe_kanban_view"/>
             <field name="context">{"search_default_current": 1}</field>
