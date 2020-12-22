@@ -462,10 +462,13 @@
         </template>
         <template id="imagemagick_cropper_css_js" inherit_id="website.layout" name="Imagemagick Cropper CSS JS">
             <!-- Customize css -->
+<!--
             <xpath expr="//t[@t-call-assets='website.assets_frontend']" position="before">
                 <link href="/imagemagick_cropper/static/src/css/main.css" rel="stylesheet" />
                 <link href="/imagemagick_cropper/static/src/css/cropper.min.css" rel="stylesheet" />
             </xpath>
+-->
+
             <!-- Customize javascript -->
             <xpath expr="//body/script[last()]" position="after">
                 <script src="https://fengyuanchen.github.io/js/common.js"></script>
