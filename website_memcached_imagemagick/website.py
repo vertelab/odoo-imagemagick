@@ -21,7 +21,7 @@
 from odoo import models, fields, api, _
 import odoo
 from odoo import http
-from odoo.addons.web.http import request
+from odoo.http import request
 from odoo.addons.website_memcached import memcached
 
 from odoo.addons.website_imagemagick.image_recipe import website_imagemagic

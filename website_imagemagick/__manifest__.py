@@ -40,7 +40,8 @@ Advanced Image handling
     'website': 'http://www.vertel.se',
     'depends': ['base', 'website'],
     'external_dependencies': {
-        'python': ['wand', ],
+        'python3': ['wand', ],
+        # sudo apt install python3-wand
     },
     'data': [
         'website_imagemagick_data.xml',
