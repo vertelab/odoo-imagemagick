@@ -31,7 +31,7 @@ Sales for images
 """,
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
-    'depends': ['base', 'website_imagemagick', 'website_sale'],
+    'depends': ['base', 'website_sale'],
     'data': [ 'views/imagemagick_sale.xml', 'website_imagemagick_sale_data.xml'
     ],
     'application': True,

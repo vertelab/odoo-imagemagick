@@ -18,7 +18,7 @@
                     <field name="id"/>
                     <templates>
                         <t t-name="kanban-box">
-                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_car d oe_kanban_global_click">
                                 <div class="oe_dropdown_kanban">
                                     <div class="oe_dropdown_toggle pull-right" groups="base.group_user">
                                         <i class="fa fa-bars fa-lg" aria-label="Delete" title="Delete"></i>
@@ -107,7 +107,7 @@
                 <tree>
                     <field name="name"/>
                     <field name="param_list"/>
-                    <field name="website_published"/>
+                <!--     <field name="website_published"/> -->
                 </tree>
             </field>
         </record>
@@ -125,7 +125,7 @@
                         </h1>
                         <group>
                             <field name="value"/>
-                            <field name="device_type"/>
+                            <field name="device_type"/>ca
                             <field name="recipe_id"/>
                         </group>
                     </sheet>
@@ -148,7 +148,7 @@
             </field>
         </record>
 
-        <!-- recipe action window -->
+         <!-- recipe action window  -->
         <record id="action_image_recipe_all_view" model="ir.actions.act_window">
             <field name="name">Image Recipe</field>
             <field name="res_model">image.recipe</field>

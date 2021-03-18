@@ -50,6 +50,6 @@ Advanced Image handling
         'views/image_recipe.xml',
     ],
     'application': True,
-    'installable': True,
+    # 'installable': True,
 }
 # vim:expandtab:smartindent:tabstop=4s:softtabstop=4:shiftwidth=4:

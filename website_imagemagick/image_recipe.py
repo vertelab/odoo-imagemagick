@@ -43,10 +43,10 @@ from wand.color import Color
 import subprocess
 import wand.api
 import ctypes
+import time
 
 import logging
 _logger = logging.getLogger(__name__)
-
 
 # https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/image-optimization#selecting-the-right-image-format
 
@@ -306,60 +306,59 @@ class image_recipe(models.Model):
 
     test = fields.Binary(compute='compute_test')
 
-    def compute_test(self):
-        import time
-        time.sleep(5)
-
-    color = fields.Integer(string='Color Index')
-    name = fields.Char(string='Name')
-    recipe = fields.Text(string='Recipe')
-    param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
-    
-    @api.model
-    def _default_state_id(self):
-        return self.env.ref('website_imagemagick.image_recipe_state_draft').id if self.env.ref('website_imagemagick.image_recipe_state_draft') else None
-    state_id = fields.Many2one(comodel_name='image.recipe.state', string='State' ) # , default=_default_state_id)
-    
-    @api.model
-    def _params(self):
-        self.param_list = ','.join(self.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
     param_list = fields.Char(compute='_params')
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
     image_format = fields.Selection([('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
-
-    @api.model
-    def _image(self):
-        try:
-            url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
-            if not url:
-                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/snippets_demo/s_banner.jpg')
-                url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
-            self.image = codecs.encode(self.run(
-                self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png'),'base64')
-        except:
-            e = sys.exc_info()
-            message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
-            _logger.error(message)
+    color = fields.Integer(string='Color Index')
+    name = fields.Char(string='Name')
+    recipe = fields.Text(string='Recipe')
+    param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
+    state_id = fields.Many2one(comodel_name='image.recipe.state', string='State' ) # , default=_default_state_id)
     image = fields.Binary(compute='_image')
-    @api.model
-    def get_external_id(self):
-        external_id = self.env['ir.model.data'].search([('model', '=', 'image.recipe'), ('res_id', '=', self.id)])
-        if not external_id:
+    external_id = fields.Char(string='External ID')
+
+    def compute_test(self):
+        time.sleep(5)
+        
+    def _default_state_id(self):
+        for state in self:
+            return state.env.ref('website_imagemagick.image_recipe_state_draft').id if state.env.ref('website_imagemagick.image_recipe_state_draft') else None
+    
+    def _params(self):
+        for params in self: 
+            params.param_list = ','.join(params.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
+
+    def _image(self):
+        for image_ in self: 
             try:
-                external_id = self.env['ir.model.data'].create({
-                    'name': '_'.join((self.name.lower()).split(' ')),
-                    'module': 'website_imagemagick',
-                    'model': 'image.recipe',
-                    'res_id': self.id,
-                })
-                self.external_id = external_id.complete_name
+                url = image_.env['ir.config_parameter'].get_param('imagemagick.test_image')
+                if not url:
+                    image_.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/snippets_demo/s_banner.jpg')
+                    url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
+                image_.image = codecs.encode(self.run(image_.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png'),'base64')
             except:
                 e = sys.exc_info()
-                raise Warning('\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
-        else:
-            self.external_id = external_id.complete_name
-    external_id = fields.Char(string='External ID')
+                message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
+                _logger.error(message)
+
+    def get_external_id(self):
+        for ext_id in self: 
+            external_id = ext_id.env['ir.model.data'].search([('model', '=', 'image.recipe'), ('res_id', '=', ext_id.id)])
+            if not external_id:
+                try:
+                    external_id = ext_id.env['ir.model.data'].create({
+                        'name': '_'.join((ext_id.name.lower()).split(' ')),
+                        'module': 'website_imagemagick',
+                        'model': 'image.recipe',
+                        'res_id': ext_id.id,
+                    })
+                    ext_id.external_id = external_id.complete_name
+                except:
+                    e = sys.exc_info()
+                    raise Warning('\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
+            else:
+                ext_id.external_id = external_id.complete_name
 
     @api.model
     def _read_state_id(self, present_ids, domain, **kwargs):
@@ -372,7 +371,6 @@ class image_recipe(models.Model):
 
   # http://docs.wand-py.org/en/0.4.1/index.html
 
-    @api.model
     def attachment_to_img(self, attachment):  # return an image object while filename is an attachment
         if attachment.url:  # make image url as /module_path/attachment_url and use it as filename
             path = '/'.join(get_module_path(attachment.url.split('/')[1]).split('/')[0:-1])
@@ -380,24 +378,22 @@ class image_recipe(models.Model):
         #_logger.warning('<<<<<<<<<<<<<< attachment_to_img >>>>>>>>>>>>>>>>: %s' % attachment.datas)
         return Image(blob=codecs.decode(attachment.datas, 'base64'))
 
-    @api.model
     def data_to_img(self, data):  # return an image object while filename is data
         #_logger.warning('<<<<<<<<<<<<<< data_to_img >>>>>>>>>>>>>>>>: %s' % data)
         if data:
             return Image(blob=data.decode('base64'))
         return Image(filename='/'.join(get_module_path('/web/static/src/img/foo.png'.split('/')[1]).split('/')[0:-1]) + '/web/static/src/img/placeholder.png')
 
-    @api.model
+
     def url_to_img(self, url):  # return an image object while filename is an url
         return Image(filename=url)
     
-    @api.model
+
     def get_mtime(self, attachment):    # return a last modified time of an image
         if attachment.write_date > self.write_date:
             return attachment.write_date
         return self.write_date
 
-    @api.model
     def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
         # ~ mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
         mimetype = self.get_mimetype(attachment, model, field, id)
@@ -426,7 +422,6 @@ class image_recipe(models.Model):
             res = self.env[model].browse(id).mimetype
         return res
         
-    @api.model
     def run(self, image, **kwargs):   # return a image with specified recipe
         kwargs.update({p.name: p.value for p in self.param_ids})
         kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe

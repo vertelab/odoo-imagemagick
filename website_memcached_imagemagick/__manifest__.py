@@ -33,7 +33,7 @@ This module depends on website_memcached
     'website': 'http://www.vertel.se',
     'depends': [
         #~ 'website_memcached',
-        'website_imagemagick'
+        # 'website_imagemagick'
     ],
     'data': [],
     'application': False,

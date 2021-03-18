@@ -30,7 +30,7 @@ Crop images
 """,
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
-    'depends': ['website_imagemagick'],
+    'depends': ['base'],
     'data': [
         'imagemagick_cropper_view.xml',
     ],

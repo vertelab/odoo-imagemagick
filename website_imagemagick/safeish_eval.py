@@ -99,11 +99,11 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
             'any': any,
             'ord': ord,
             'chr': chr,
-            'cmp': cmp,
+            #'cmp': cmp,
             'divmod': divmod,
             'isinstance': isinstance,
             'range': range,
-            'xrange': xrange,
+            #'xrange': xrange,
             'zip': zip,
             'Exception': Exception,
         }
@@ -115,7 +115,7 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
     c = test_expr(expr, _SAFE_OPCODES, mode=mode)
     try:
         return eval(c, globals_dict, locals_dict)
-    except odoo.osv.orm.except_orm:
+    except odoo.exceptions.except_orm:
         raise
     except odoo.exceptions.Warning:
         raise
