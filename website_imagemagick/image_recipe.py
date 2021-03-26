@@ -35,7 +35,7 @@ import traceback
 import codecs
 
 from .safeish_eval import safe_eval as eval
-
+import os
 from wand.image import Image
 from wand.display import display
 from wand.drawing import Drawing
@@ -44,7 +44,8 @@ import subprocess
 import wand.api
 import ctypes
 import time
-
+import uuid
+import base64
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -309,7 +310,7 @@ class image_recipe(models.Model):
     param_list = fields.Char(compute='_params')
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
-    image_format = fields.Selection([('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
+    image_format = fields.Selection([('progressive_jpeg', 'Progressive JPEG'),('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
     color = fields.Integer(string='Color Index')
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
@@ -403,8 +404,21 @@ class image_recipe(models.Model):
             if not o:
                 return http.send_file(BytesIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
             o = o[0]
-            #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
-            return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=field)
+
+            if self.image_format == 'progressive_jpeg':
+                unique_filename = str(uuid.uuid4())
+                image = self.run(Image(blob=codecs.decode(o[field], 'base64')))
+                image.format = "jpg"
+                image.save(filename=f"/tmp/{unique_filename}")
+                cmd = "convert /tmp/%s -interlace line /tmp/%s"% (unique_filename, unique_filename)
+                _logger.warning(cmd)
+                os.system(cmd)
+                img = open(f"/tmp/{unique_filename}", "r+b")
+                os.remove(f"/tmp/{unique_filename}")
+                mimetype = "image/jpg"
+                return http.send_file(img, mimetype=mimetype, filename=field)
+            else:
+                return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'jpg')), mimetype=mimetype, filename=field)
 
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
@@ -420,6 +434,8 @@ class image_recipe(models.Model):
             res = attachment.mimetype
         if model == 'ir.attachment' and field == 'datas':
             res = self.env[model].browse(id).mimetype
+        if self.image_format == "progressive_jpg":
+            res = "image/jpg"
         return res
         
     def run(self, image, **kwargs):   # return a image with specified recipe
