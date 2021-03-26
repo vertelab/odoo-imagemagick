@@ -31,10 +31,7 @@ This module depends on website_memcached
 """,
     'author': 'Vertel AB',
     'website': 'http://www.vertel.se',
-    'depends': [
-        #~ 'website_memcached',
-        # 'website_imagemagick'
-    ],
+    'depends': ['website_memcached','website_imagemagick'],
     'data': [],
     'application': False,
 }
