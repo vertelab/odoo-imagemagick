@@ -293,6 +293,30 @@ class website(models.Model):
 
         return response
 
+    @api.model
+    def imagefield_hash(self, model, field, id, recipe):
+        """Returns a local url that points to the image field of a given browse record, run through an imagemagick recipe.
+        """
+        record = self.env[model].sudo().browse(id)
+        sudo_recipe = self.env.ref(recipe).sudo()
+        txt = f"""{
+            record.write_date or record.create_date or '' }{ 
+            sudo_recipe.write_date or sudo_recipe.create_date or '' }{
+            model }{
+            id }{
+            sudo_recipe.id }"""
+        hashtxt = hashlib.sha1(txt.encode('utf-8')).hexdigest()[0:7]
+
+        try:
+            device_type = request.session.get('device_type','md')
+        except:
+            device_type = 'md'
+        
+        return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(
+            model=model, field=field, id=id, recipe=recipe,
+            file_name='%s-%s.%s' % (
+                device_type,
+                hashtxt, sudo_recipe.image_format or 'jpeg')) if record[field] else ''
 
 class image_recipe_state(models.Model):
     _name = 'image.recipe.state'
