@@ -1,4 +1,4 @@
-l# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    Odoo, Open Source Enterprise Management Solution, third party addon
