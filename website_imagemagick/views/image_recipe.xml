@@ -55,7 +55,7 @@
             <field name="arch" type="xml">
                 <form string="Image Recipe">
                     <header>
-                        <field name="state_id" widget="statusbar" clickable="True"/>
+                        <field name="state_id" widget="statusbar" clickable="true"/>
                     </header>
                     <sheet string="Image Recipe">
                         <h1>
