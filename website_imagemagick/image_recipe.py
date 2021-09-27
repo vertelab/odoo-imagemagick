@@ -300,7 +300,7 @@ class website(models.Model):
         record = self.env[model].sudo().browse(id)
         sudo_recipe = self.env.ref(recipe).sudo()
         txt = f"""{
-            record.write_date or record.create_date or '' }{ 
+            record.write_date or record.create_date or '' }{
             sudo_recipe.write_date or sudo_recipe.create_date or '' }{
             model }{
             id }{
@@ -311,7 +311,7 @@ class website(models.Model):
             device_type = request.session.get('device_type','md')
         except:
             device_type = 'md'
-        
+
         return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(
             model=model, field=field, id=id, recipe=recipe,
             file_name='%s-%s.%s' % (
@@ -345,17 +345,17 @@ class image_recipe(models.Model):
 
     def compute_test(self):
         time.sleep(5)
-        
+
     def _default_state_id(self):
         for state in self:
             return state.env.ref('website_imagemagick.image_recipe_state_draft').id if state.env.ref('website_imagemagick.image_recipe_state_draft') else None
-    
+
     def _params(self):
-        for params in self: 
+        for params in self:
             params.param_list = ','.join(params.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
 
     def _image(self):
-        for image_ in self: 
+        for image_ in self:
             try:
                 url = image_.env['ir.config_parameter'].get_param('imagemagick.test_image')
                 if not url:
@@ -368,7 +368,7 @@ class image_recipe(models.Model):
                 _logger.error(message)
 
     def get_external_id(self):
-        for ext_id in self: 
+        for ext_id in self:
             external_id = ext_id.env['ir.model.data'].search([('model', '=', 'image.recipe'), ('res_id', '=', ext_id.id)])
             if not external_id:
                 try:
@@ -412,7 +412,7 @@ class image_recipe(models.Model):
 
     def url_to_img(self, url):  # return an image object while filename is an url
         return Image(filename=url)
-    
+
 
     def get_mtime(self, attachment):    # return a last modified time of an image
         if attachment.write_date > self.write_date:
@@ -461,7 +461,7 @@ class image_recipe(models.Model):
         if self.image_format == "progressive_jpg":
             res = "image/jpg"
         return res
-        
+
     def run(self, image, **kwargs):   # return a image with specified recipe
         kwargs.update({p.name: p.value for p in self.param_ids})
         kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe
@@ -514,7 +514,6 @@ class set_device_type(http.Controller):
             request.session['device_type'] = 'md'
         else:
             request.session['device_type'] = 'lg'
-        _logger.warn('Device type: %s' %request.session.get('device_type'))
 
 
 class image_recipe_param(models.Model):
