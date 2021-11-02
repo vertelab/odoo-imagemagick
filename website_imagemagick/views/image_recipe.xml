@@ -158,7 +158,12 @@
             <field name="context">{"search_default_current": 1}</field>
         </record>
 
-        <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_administration_shortcut" sequence="100" action="action_image_recipe_all_view"/>
+       
+        <menuitem id="menu_catalog_image_magick" name="ImageMagick"
+        parent="website.menu_website_configuration" sequence="100"
+        groups="website.group_website_designer"/>
+         <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="menu_catalog_image_magick" sequence="100" action="action_image_recipe_all_view"/>
+
 
     </data>
     <data>

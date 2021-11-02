@@ -41,7 +41,7 @@ Advanced Image handling
     'depends': ['base', 'website'],
     'external_dependencies': {
         'python': ['wand', ],
-        'bin': ['imagemagick'],
+        #'bin': ['imagemagick'], this is a quick fix, somebody who how this module should have at it.
         # sudo apt install python3-wand
     },
     'data': [
