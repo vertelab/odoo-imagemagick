@@ -87,17 +87,17 @@ class CachedImageMagick(website_imagemagic):
         return super(CachedImageMagick, self).view_url(recipe, recipe_ref, **post)
 
 
-    # @memcached.route(
-    #     # key=lambda parameters: 'db: {db} publisher: {publisher} base.group_website_designer: {designer} path: {path} logged_in: {logged_in} lang: {lang} country: {country} search: %s group: %s pricelist: %s attribs: %s' % (str(parameters.get("search")), request.website.get_dn_groups(), request.website.get_pricelist(), request.website.get_attribs()),
+    @memcached.route(
+        key=lambda parameters: 'db: {db} publisher: {publisher} base.group_website_designer: {designer} path: {path} logged_in: {logged_in} lang: {lang} country: {country} search: %s group: %s pricelist: %s attribs: %s' % (str(parameters.get("search")), request.website.get_dn_groups(), request.website.get_pricelist(), request.website.get_attribs()),
     #     key=lambda parameters: 'hej',
 
-    #     flush_type=lambda kw: 'webshop',
-    #     no_cache=True,
-    #     cache_age=86400,  # Memcached    43200 (12 tim)  86400 (24 tim)  31536000 (1 år)
-    #     max_age=31536000, # Webbläsare
-    #     s_maxage=600)     # Varnish
-    # def website_image(self, model, id, field, recipe=None,recipe_ref=None, **post):
-    #     return super(CachedImageMagick, self).website_image(model, id, field, recipe,recipe_ref, **post)
+        flush_type=lambda kw: 'webshop',
+        no_cache=True,
+        cache_age=86400,  # Memcached    43200 (12 tim)  86400 (24 tim)  31536000 (1 år)
+        max_age=31536000, # Webbläsare
+        s_maxage=600)     # Varnish
+    def website_image(self, model, id, field, recipe=None,recipe_ref=None, **post):
+        return super(CachedImageMagick, self).website_image(model, id, field, recipe,recipe_ref, **post)
 
 
     # @memcached.route(
