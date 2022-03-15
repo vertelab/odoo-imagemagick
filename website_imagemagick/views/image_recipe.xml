@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
 
         <!-- image recipe kanban view -->
         <record id="image_recipe_kanban_view" model="ir.ui.view">
