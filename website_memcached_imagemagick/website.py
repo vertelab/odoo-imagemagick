@@ -96,8 +96,8 @@ class CachedImageMagick(website_imagemagic):
     #     cache_age=86400,  # Memcached    43200 (12 tim)  86400 (24 tim)  31536000 (1 år)
     #     max_age=31536000, # Webbläsare
     #     s_maxage=600)     # Varnish
-    def website_image(self, model, id, field, recipe=None,recipe_ref=None, **post):
-        return super(CachedImageMagick, self).website_image(model, id, field, recipe,recipe_ref, **post)
+    # def website_image(self, model, id, field, recipe=None,recipe_ref=None, **post):
+    #     return super(CachedImageMagick, self).website_image(model, id, field, recipe,recipe_ref, **post)
 
 
     # @memcached.route(
