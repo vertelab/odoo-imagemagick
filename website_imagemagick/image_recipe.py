@@ -334,7 +334,7 @@ class image_recipe(models.Model):
     param_list = fields.Char(compute='_params')
     website_published =fields.Boolean(string="Published", default = True)
     description = fields.Text(string="Description")
-    image_format = fields.Selection([('progressive_jpeg', 'Progressive JPEG'),('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
+    image_format = fields.Selection([('progressive_jpeg', 'Progressive JPEG'),('jpeg','Jpeg'),('png','PNG'),('GIF','gif'),('webp','webp')],string='Image Format')
     color = fields.Integer(string='Color Index')
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
