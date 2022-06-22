@@ -41,6 +41,7 @@ Advanced Image handling
     'depends': ['base', 'website'],
     'external_dependencies': {
         'python': ['wand', ],
+
         #'bin': ['imagemagick'], this is a quick fix, somebody who how this module should have at it.
         # sudo apt install python3-wand
     },
@@ -53,4 +54,3 @@ Advanced Image handling
     'application': True,
     # 'installable': True,
 }
-# vim:expandtab:smartindent:tabstop=4s:softtabstop=4:shiftwidth=4:
