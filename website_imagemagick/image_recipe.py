@@ -517,7 +517,8 @@ class set_device_type(http.Controller):
 
 
 class image_recipe_param(models.Model):
-    """
+    _name = "image.recipe.param"
+    _description = """
    Device Type == Extra small devices    Small devices       Medium devices      Large devices
                    Phones (<768px)        Tablets (≥768px)    Desktops (≥992px)   Desktops (≥1200px)
    column ca       auto                     ~62px                   ~81px            ~97px
@@ -526,9 +527,6 @@ class image_recipe_param(models.Model):
    device_type is saved in session by a javascript / json-controller
 
     """
-    _name = "image.recipe.param"
-
-
 
     name = fields.Char(string='Name')
     device_type = fields.Selection([('xs','Extra Small'),('sm','Small'),('md','Medium'),('lg','Large'),('','None')],string='Device Type',default='')
