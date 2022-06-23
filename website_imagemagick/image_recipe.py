@@ -329,6 +329,7 @@ class image_recipe_state(models.Model):
 
 class image_recipe(models.Model):
     _name = "image.recipe"
+    _description = 'TODO'
 
     test = fields.Binary(compute='compute_test')
 
