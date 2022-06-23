@@ -320,6 +320,7 @@ class website(models.Model):
 
 class image_recipe_state(models.Model):
     _name = 'image.recipe.state'
+    _description = 'TODO'
 
     name = fields.Char(string='Name')
     sequence = fields.Integer(string='Sequence')
