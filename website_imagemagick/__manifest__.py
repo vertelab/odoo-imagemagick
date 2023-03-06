@@ -39,7 +39,7 @@ Advanced Image handling
 """,
     #'sequence': '1',
     'author': 'Vertel AB',
-    'website': 'https://vertel.se/apps/odoo-imagemagick/imagemagick_website',
+    'website': 'https://vertel.se/apps/odoo-imagemagick/website_imagemagick',
     'images': ['static/description/banner.png'], # 560x280 px.
     'license': 'AGPL-3',
     'contributor': '',
