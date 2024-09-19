@@ -384,7 +384,7 @@ class website(models.Model):
             id }{
             sudo_recipe.id }"""
         hashtxt = hashlib.sha1(txt.encode('utf-8')).hexdigest()[0:7]
-        hashtxt = hashlib.sha1('%s%s%s%s%s' % (
+        # hashtxt = hashlib.sha1('%s%s%s%s%s' % (
         # #elif VERSION == "master"
             record.write_date or record.create_date or '',
             sudo_recipe.write_date or sudo_recipe.create_date or '',
