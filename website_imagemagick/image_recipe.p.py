@@ -19,6 +19,22 @@
 #
 ##############################################################################
 import base64
+# #if VERSION >= "17.0"
+from io import StringIO, BytesIO
+from odoo import models, fields, api, _
+from odoo.exceptions import RedirectWarning
+from odoo import http
+from odoo.http import request, STATIC_CACHE
+from odoo.modules import get_module_resource, get_module_path
+# #elif VERSION == "master"
+from cStringIO import StringIO
+from openerp import models, fields, api, _
+from openerp.exceptions import except_orm, Warning, RedirectWarning
+from openerp import http
+from openerp.http import request, STATIC_CACHE
+from openerp import SUPERUSER_ID
+from openerp.modules import get_module_resource, get_module_path
+# #endif
 from datetime import datetime
 import werkzeug
 import pytz
@@ -32,6 +48,16 @@ from wand.display import display
 from wand.drawing import Drawing
 from wand.color import Color
 import subprocess
+# #if VERSION == "master"
+from wand.image import Image
+# #elif VERSION == "17.0"
+import codecs
+import os
+import wand.api
+import ctypes
+import time
+import uuid
+# #endif
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -49,6 +75,11 @@ class Image(Image):
 
 
 class website_imagemagic(http.Controller):
+    # #if VERSION >= "17.0"
+    # this controller will control url: /imagemagick/attachment_id/id/recipe_id or /imagemagick/attachment_id/ref/recipe_ref
+    # #elif VERSION == "master"
+    # this controller will control url: /image/image_id/magic/recipe_id
+    # #endif
     @http.route(['/imagemagick/<model("ir.attachment"):image>/id/<model("image.recipe"):recipe>',
                  '/imagemagick/<model("ir.attachment"):image>/ref/<string:recipe_id>'], type='http', auth="public", website=True)
     def view_attachment(self, image=None, recipe=None, recipe_ref=None, **post):
@@ -59,6 +90,11 @@ class website_imagemagic(http.Controller):
         return request.registry['website']._image(
                 request.cr, request.uid, 'ir.attachment','%s_%s' % (image.id, hashlib.sha1(image.sudo().write_date or image.sudo().create_date or '').hexdigest()[0:7]),
                 'datas', werkzeug.wrappers.Response(),250,250,cache=STATIC_CACHE)
+    # #if VERSION >= "17.0"
+    # this controller will control url: /imageurl/id/<recipe_id>?url=<your url> or /imageurl/ref/<recipe_ref>?url=<your url>
+    # #elif VERSION == "master"
+    # this controller will control url: /image/id/<id>?url=<your url>
+    # #endif
     @http.route(['/imageurl/id/<model("image.recipe"):recipe>', '/imageurl/ref/<string:recipe_ref>'], type='http', auth="public", website=True)
     def view_url(self, recipe=None, recipe_ref=None, **post):
         url = post.get('url','')
@@ -78,6 +114,11 @@ class website_imagemagic(http.Controller):
     def website_image(self, model, id, field, recipe=None, recipe_ref=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
+        # #if VERSION >= "17.0"
+        return recipe.send_file(field=field, model=model, id=int(id))
+        # #elif VERSION == "master" 
+        return recipe.sudo().send_file(field=field, model=model, id=id)
+        # #endif
 
     # this controller will control url: /imagefield/model_id/field_id/ref/recipe_ref/image/file_name
     @http.route([
@@ -86,6 +127,22 @@ class website_imagemagic(http.Controller):
     def website_image_hash(self, model, id, field, recipe_ref, file_name=None, **post):
         if recipe_ref:
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
+        # #if VERSION >= "17.0"
+        return recipe.send_file(field=field, model=model, id=int(id))
+        # #elif VERSION == "master"
+        return recipe.sudo().send_file(field=field, model=model, id=id)
+    @http.route([
+        '/imagefieldurl/<model>/<field>/<id>/ref/<recipe_ref>',
+        '/imagefieldurl/<model>/<field>/<id>/id/<model("image.recipe"):recipe>',
+        ], type='http', auth="public", website=True, multilang=False)
+    def website_url(self, model, id, field, recipe=None, recipe_ref=None, **post):
+        if recipe_ref:
+            recipe = request.env.ref(recipe_ref)
+        o = request.env[model].browse(int(id))
+        url = getattr(o, field).strip()
+        attachment_id = int(url.split('/')[6].split('_')[0])
+        return recipe.send_file(field='datas', model='ir.attachment', id=attachment_id)
+        # #endif
 
    # this controller will control url: /website/imagemagick/model_id/field_id/obj_id/recipe_id
     @http.route([
@@ -94,6 +151,11 @@ class website_imagemagic(http.Controller):
     def website_imagemagick(self, model, field, id, recipe=None, **post):
         try:
             idsha = id.split('_')
+            # #if VERSION >= "17.0"
+            id = int(idsha[0])
+            # #elif VERSION == "master"
+            id = idsha[0]
+            # #endif
             response = werkzeug.wrappers.Response()
             return request.env['website']._imagemagick(
                 model, id, field, recipe, response,
@@ -117,6 +179,18 @@ class website_imagemagic(http.Controller):
     """
 
     def placeholder(self, response):
+        # #if VERSION >= "17.0"
+        # ~ return request.env['website']._image_placeholder(response)
+        f = open(get_module_path('web') + '/static/img/placeholder.png', 'rb')
+        # ~ asd = Image(file=f, format='PNG')
+        response.mimetype = 'image/png'
+        filename = 'placeholder.png'
+        response.headers['Content-Disposition'] = 'inline; filename="%s"' % filename
+        response.data = f.read()
+        return response.make_conditional(request.httprequest)
+        # #elif VERSION == "master"
+        return request.env['website']._image_placeholder(response)
+        # #endif
 
 #
 # Web Editor tools
@@ -134,6 +208,20 @@ class website_imagemagic(http.Controller):
         url = None
         if '/website/static/src/img/' in img_src and not '/imageurl' in img_src:
             url = img_src[img_src.find('/website'):]
+            # #if VERSION >= "17.0"
+            return '/imageurl/id/%s?url=%s' %(recipe_id, url)
+        if '/website/image/ir.attachment/' in img_src:
+            attachment_id = re.search('/website/image/ir.attachment/(.*)/datas', img_src).group(1).split('_')[0]
+        elif '/imagefield/ir.attachment/datas/' in img_src:
+            attachment_id = re.search('/imagefield/ir.attachment/datas/(.*)/id', img_src).group(1)
+        elif '/web/image/' in img_src:
+            attachment_id = re.search('/web/image/(.*)', img_src).group(1)
+            # #elif VERSION == "master"
+            return '/imageurl/id/%s?url=%s' %(recipe_id,url)
+        if '/website/image/' in img_src:
+            pattern = re.search('/website/image/(.*)/(.*)/(.*)', img_src)
+            return '/imagefield/%s/%s/%s/ref/%s' %(pattern.group(1), pattern.group(3), pattern.group(2).split('_')[0], recipe_id)
+            # #endif
         elif '/imagemagick/' in img_src:
             attachment_id = re.search('/imagemagick/(.*)/id', img_src).group(1)
             attachment = request.env['ir.attachment'].browse(int(attachment_id if attachment_id.isdigit() else 0))
@@ -170,13 +258,30 @@ class website(models.Model):
             if id:
                 record = self.env[record].browse(id)
             else:
+                # #if VERSION >= "17.0"
+                record = self.env.ref(record)
+                # #elif VERSION == "master"
+                record = self.env.ref(record).sudo()
+                # #endif
         model = record._name
         sudo_record = record.sudo()
         if type(recipe) is str:
+            # #if VERSION >= "17.0"
+            sudo_recipe = self.env.ref(recipe)
+            # #elif VERSION == "master" 
+            sudo_recipe = self.env.ref(recipe).sudo()
+            # #endif
         elif type(recipe) is int:
             sudo_recipe = self.env['image.recipe'].browse(recipe).sudo()
         else:
             sudo_recipe = recipe.sudo()
+        # #if VERSION >= "17.0" 
+        id = '%s_%s' % (record.id, hashlib.sha1(('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
+            sudo_recipe.write_date or sudo_recipe.create_date or '')).encode('utf-8')).hexdigest())
+        # #elif VERSION == "master"
+        id = '%s_%s' % (record.id, hashlib.sha1('%s%s' % (sudo_record.write_date or sudo_record.create_date or '',
+            sudo_recipe.write_date or sudo_recipe.create_date or '')).hexdigest())
+        # #endif
         return '/website/imagemagick/%s/%s/%s/%s' % (model, field, id, sudo_recipe.id)
 
     # WIP. Very temporary solution.
@@ -210,10 +315,20 @@ class website(models.Model):
                                 [('id', '=', id),
                                 ('website_published', '=', True)])
         if not len(record) > 0:
+            # #if VERSION >= "17.0"
+            return self.env['website_imagemagick'].placeholder(response)
+            # #elif VERSION == "master"
+            return self._image_placeholder(response)
+            # #endif
 
         concurrency = '__last_update'
         record = record.sudo()
         if hasattr(record, concurrency):
+            # #if VERSION >= "17.0"
+            server_format = odoo.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT
+            # #elif VERSION == "master"
+            server_format = openerp.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT
+            # #endif
             try:
                 response.last_modified = datetime.datetime.strptime(
                     getattr(record, concurrency), server_format + '.%f')
@@ -225,6 +340,11 @@ class website(models.Model):
         # Field does not exist on model or field set to False
         if not hasattr(record, field) and getattr(record, field) and recipe:
             # FIXME: maybe a field which does not exist should be a 404?
+            # #if VERSION >= "17.0"
+            return self.env['website_imagemagick'].placeholder(response)
+            # #elif VERSION == "master"
+            return self._image_placeholder(response)
+            # #endif
 
         #TODO: Keep format of original image.
         img = recipe.run(Image(blob=getattr(record, field).decode('base64'))).make_blob() #format='jpg')
@@ -256,13 +376,35 @@ class website(models.Model):
          """
         record = self.env[model].sudo().browse(id)
         sudo_recipe = self.env.ref(recipe).sudo()
+        # #if VERSION >= "17.0"
+        txt = f"""{
+            record.write_date or record.create_date or '' }{
+            sudo_recipe.write_date or sudo_recipe.create_date or '' }{
+            model }{
+            id }{
+            sudo_recipe.id }"""
+        hashtxt = hashlib.sha1(txt.encode('utf-8')).hexdigest()[0:7]
+        hashtxt = hashlib.sha1('%s%s%s%s%s' % (
+        # #elif VERSION == "master"
+            record.write_date or record.create_date or '',
+            sudo_recipe.write_date or sudo_recipe.create_date or '',
+            model, id, sudo_recipe.id)).hexdigest()[0:7]
+        # #endif
         try:
             device_type = request.session.get('device_type','md')
         except:
             device_type = 'md'
+        # #if VERSION >= "17.0"
+        return '/imagefield/{model}/{field}/{id}/ref/{recipe}/image/{file_name}'.format(
+        # #endif
             model=model, field=field, id=id, recipe=recipe,
             file_name='%s-%s.%s' % (
                 device_type,
+                # #if VERSION >= "17.0"
+                hashtxt, sudo_recipe.image_format or 'jpeg')) if record[field] else ''
+                # #elif VERSION == "master"
+                hashtxt, sudo_recipe.image_format or 'jpeg'))
+                # #endif
 
 class image_recipe_state(models.Model):
     _name = 'image.recipe.state'
@@ -278,15 +420,113 @@ class image_recipe(models.Model):
     _description = 'TODO'
 
     test = fields.Binary(compute='compute_test')
+    # #if VERSION >= "17.0"
+    param_list = fields.Char(compute='_params')
+    website_published =fields.Boolean(string="Published", default = True)
+    description = fields.Text(string="Description")
+    image_format = fields.Selection([('progressive_jpeg', 'Progressive JPEG'),('jpeg','Jpeg'),('jp2','JPEG 2000'),('png','PNG'),('GIF','gif'),('webp','WebP')],string='Image Format')
+    # #elif VERSION == "master"
+    def compute_test(self):
+        import time
+        time.sleep(5)
+     color = fields.Integer(string='Color Index')
+    # #endif
     name = fields.Char(string='Name')
     recipe = fields.Text(string='Recipe')
     param_ids = fields.One2many(comodel_name='image.recipe.param', inverse_name='recipe_id', string='Recipes')
+    # #if VERSION >= "17.0"
+    state_id = fields.Many2one(comodel_name='image.recipe.state', string='State' ) # , default=_default_state_id)
+    image = fields.Binary(compute='_image')
+    external_id = fields.Char(string='External ID')
+    def compute_test(self):
+        time.sleep(5)
+     @api.one
+    # #endif
     def _default_state_id(self):
+        # #if VERSION >= "17.0"
+        for state in self:
+            return state.env.ref('website_imagemagick.image_recipe_state_draft').id if state.env.ref('website_imagemagick.image_recipe_state_draft') else None
+         return self.env.ref('website_imagemagick.image_recipe_state_draft').id if self.env.ref('website_imagemagick.image_recipe_state_draft') else None
+        # #elif VERSION == "master"
+    state_id = fields.Many2one(comodel_name='image.recipe.state', string='State' ) # , default=_default_state_id)
+    @api.one
+        # #endif
     def _params(self):
+        # #if VERSION >= "17.0" 
+        for params in self:
+            params.param_list = ','.join(params.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
+        # #elif VERSION == "master"
+        self.param_list = ','.join(self.param_ids.mapped(lambda p: '%s: %s' % (p.name,p.value)))
+    param_list = fields.Char(compute='_params')
+    website_published =fields.Boolean(string="Published", default = True)
+    description = fields.Text(string="Description")
+    image_format = fields.Selection([('jpeg','Jpeg'),('png','PNG'),('GIF','gif')],string='Image Format')
+    @api.one
+        # #endif
     def _image(self):
+        # #if VERSION >= "17.0"
+        for image_ in self:
+        # #elif VERSION == "master"
+        try:
+            url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
+            if not url:
+                self.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/fields.jpg')
+                url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
+            self.image = self.run(self.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png').encode('base64')
+        except:
+            e = sys.exc_info()
+            message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
+            _logger.error(message)
+    image = fields.Binary(compute='_image')
+    @api.multi
+    def get_external_id(self):
+        external_id = self.env['ir.model.data'].search([('model', '=', 'image.recipe'), ('res_id', '=', self.id)])
+        if not external_id:
+        # #endif
             try:
+                # #if VERSION >= "17.0"
+                url = image_.env['ir.config_parameter'].get_param('imagemagick.test_image')
+                if not url:
+                    image_.env['ir.config_parameter'].set_param('imagemagick.test_image','website/static/src/img/snippets_demo/s_banner.jpg')
+                    url = self.env['ir.config_parameter'].get_param('imagemagick.test_image')
+                image_.image = codecs.encode(self.run(image_.url_to_img('/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)).make_blob(format='png'),'base64')
+                # #elif VERSION == "master"
+                external_id = self.env['ir.model.data'].create({
+                    'name': '_'.join((self.name.lower()).split(' ')),
+                    'module': 'website_imagemagick',
+                    'model': 'image.recipe',
+                    'res_id': self.id,
+                })
+                self.external_id = external_id.complete_name
+                # #endif
             except:
                 e = sys.exc_info()
+                # #if VERSION >= "17.0"
+                message = '\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2]))
+                _logger.error(message)
+     def get_external_id(self):
+        for ext_id in self:
+            external_id = ext_id.env['ir.model.data'].search([('model', '=', 'image.recipe'), ('res_id', '=', ext_id.id)])
+            if not external_id:
+                try:
+                    external_id = ext_id.env['ir.model.data'].create({
+                        'name': '_'.join((ext_id.name.lower()).split(' ')),
+                        'module': 'website_imagemagick',
+                        'model': 'image.recipe',
+                        'res_id': ext_id.id,
+                    })
+                    ext_id.external_id = external_id.complete_name
+                except:
+                    e = sys.exc_info()
+                    raise Warning('\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
+            else:
+                ext_id.external_id = external_id.complete_name
+                # #elif VERSION == "master"
+                raise Warning('\n%s' % ''.join(traceback.format_exception(e[0], e[1], e[2])))
+        else:
+            self.external_id = external_id.complete_name
+    external_id = fields.Char(string='External ID')
+                # #endif
 
     @api.model
     def _read_state_id(self, present_ids, domain, **kwargs):
@@ -304,29 +544,110 @@ class image_recipe(models.Model):
             path = '/'.join(get_module_path(attachment.url.split('/')[1]).split('/')[0:-1])
             return Image(filename=path + attachment.url)
         #_logger.warning('<<<<<<<<<<<<<< attachment_to_img >>>>>>>>>>>>>>>>: %s' % attachment.datas)
+        # #if VERSION >= "17.0"
+        return Image(blob=codecs.decode(attachment.datas, 'base64'))
+        # #elif VERSION == "master"
+        return Image(blob=attachment.datas.decode('base64'))
+        # #endif
 
     def data_to_img(self, data):  # return an image object while filename is data
         #_logger.warning('<<<<<<<<<<<<<< data_to_img >>>>>>>>>>>>>>>>: %s' % data)
         if data:
             return Image(blob=data.decode('base64'))
         return Image(filename='/'.join(get_module_path('/web/static/src/img/foo.png'.split('/')[1]).split('/')[0:-1]) + '/web/static/src/img/placeholder.png')
+     # #if VERSION >= "17.0"
+     def url_to_img(self, url):  # return an image object while filename is an url
+     # #endif
         return Image(filename=url)
+     # #if VERSION >= "17.0"
+     def get_mtime(self, attachment):    # return a last modified time of an image
+     # #endif
         if attachment.write_date > self.write_date:
             return attachment.write_date
         return self.write_date
 
     def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
+        # #if VERSION >= "17.0"
+        # ~ mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
+        mimetype = self.get_mimetype(attachment, model, field, id)
+        # #elif VERSION == "master"
+        mimetype = 'image/%s' % (self.image_format or 'png')
+        # #endif
         if field:
             #o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
+            # #if VERSION >= "17.0"
+            o = self.env[model].sudo().search_read([('id','=',id)],[field])
+            if not o:
+                return http.send_file(BytesIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
+            # #elif VERSION == "master"
+            o = self.env[model].sudo().search_read([('id','=',int(id if id.isdigit() else 0))],[field])
+            if not (o and o[0][field]):
+                return http.send_file(StringIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format or 'png')), mimetype=mimetype)
+            # #endif
             o = o[0]
+            # #if VERSION >= "17.0"
+            if self.image_format == 'progressive_jpeg':
+                unique_filename = str(uuid.uuid4())
+                image = self.run(Image(blob=codecs.decode(o[field], 'base64')))
+                image.format = "jpg"
+                image.save(filename=f"/tmp/{unique_filename}")
+                cmd = "convert /tmp/%s -interlace line /tmp/%s"% (unique_filename, unique_filename)
+                _logger.warning(cmd)
+                os.system(cmd)
+                img = open(f"/tmp/{unique_filename}", "r+b")
+                os.remove(f"/tmp/{unique_filename}")
+                mimetype = "image/jpg"
+                return http.send_file(img, mimetype=mimetype, filename=field)
+            else:
+                return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'jpg')), mimetype=mimetype, filename=field)
+            #_logger.warning('<<<<<<<<<<<<<< data >>>>>>>>>>>>>>>>: %s' % o)
+            # #elif VERSION == "master"
+            #return http.send_file(StringIO(self.run(self.data_to_img(getattr(o, field)), record=o).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype, filename=field, mtime=self.get_mtime(o))
+            return http.send_file(StringIO(self.run(Image(blob=o[field].decode('base64'))).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=field)
+            # #endif
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
+            # #if VERSION >= "17.0"
+            # ~ return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            return http.send_file(BytesIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            # #elif VERSION == "master"
+            return http.send_file(StringIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            # #endif
         #~ return http.send_file(self.run(self.url_to_img(url)), filename=url)
+        # #if VERSION >= "17.0"
+        return http.send_file(BytesIO(self.run(Image(filename=url)).make_blob(format=self.image_format or 'png')),mimetype=mimetype)
+        # #elif VERSION == "master"
+        return http.send_file(StringIO(self.run(Image(filename=url)).make_blob(format=self.image_format or 'png')),mimetype=mimetype)
+        # #endif
+    # #if VERSION >= "17.0"
+    @api.model
+    def get_mimetype(self, attachment=None, model=None, field=None, id=None):
+        res = 'image/%s' % (self.image_format if self.image_format else 'png')
+        if attachment and attachment.mimetype:
+            res = attachment.mimetype
+        if model == 'ir.attachment' and field == 'datas':
+            res = self.env[model].browse(id).mimetype
+        if self.image_format == "progressive_jpg":
+            res = "image/jpg"
+        return res
+    # #endif
     def run(self, image, **kwargs):   # return a image with specified recipe
         kwargs.update({p.name: p.value for p in self.param_ids})
         kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
+        # #if VERSION >= "17.0"
+        # ~ company = request.website_id.company_id if request.website_id else self.env.user.company_id
+        company = self.env.user.company_id
+        MagickEvaluateImage = wand.api.library.MagickEvaluateImage
+        MagickEvaluateImage.argtypes = [ctypes.c_void_p, ctypes.c_int, ctypes.c_double]
+        def convert(self, operation, argument):
+            MagickEvaluateImage(
+                self.wand,
+                wand.image.EVALUATE_OPS.index(operation),
+                self.quantum_range * float(argument))
+        company = request.website.company_id if request.website else self.env.user.company_id
+        # #endif
         kwargs.update({
             'time': time,
             'Image': Image,
@@ -339,6 +660,12 @@ class image_recipe(models.Model):
             'record': kwargs.get('record',None),
             'http': http,
             'request': request,
+            # #if VERSION >= "17.0"
+            # ~ 'website': request.website,
+            'convert': convert,
+            # #elif VERSION == "master"
+            'website': request.website,
+            # #endif
             #~ 'logo': Image(blob=company.logo.decode('base64')),
             #~ 'logo_web': Image(blob=company.logo_web.decode('base64')),
             })
