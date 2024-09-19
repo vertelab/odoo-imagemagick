@@ -5,7 +5,6 @@
 <openerp>
 <!-- #endif -->
     <data>
-
 <!-- #if VERSION == "master" -->
         <template id="snippets" inherit_id="website.snippets" name="Override image with imagemagick recipe">
             <xpath expr="//img[@src='/website/static/src/img/big_picture.png']" position="attributes">
