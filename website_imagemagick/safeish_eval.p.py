@@ -18,6 +18,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+# #if VERSION >= "17.0"
+import odoo
+from odoo.tools.safe_eval import _SAFE_OPCODES, test_expr, _import
+from odoo.tools.misc import ustr
+# #elif VERSION == "master"
+import openerp
+from openerp.tools.safe_eval import _SAFE_OPCODES, test_expr, _import
+from openerp.tools.misc import ustr
+# #endif
 from opcode import opmap
 from psycopg2 import OperationalError
 from types import CodeType
@@ -70,9 +79,19 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
             'False': False,
             'None': None,
             'str': str,
+            # #if VERSION >= "17.0"
+            # ~ 'unicode': unicode,
+            # #elif VERSION == "master"
+            'unicode': unicode,
+            # #endif
             'bool': bool,
             'int': int,
             'float': float,
+            # #if VERSION >= "17.0"
+            # ~ 'long': long,
+            # #elif VERSION == "master"
+            'long': long,
+            # #endif
             'enumerate': enumerate,
             'dict': dict,
             'list': list,
@@ -82,6 +101,11 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
             'min': min,
             'max': max,
             'sum': sum,
+            # #if VERSION >= "17.0"
+            # ~ 'reduce': reduce,
+            # #elif VERSION == "masetr"
+            'reduce': reduce,
+            # #endif
             'filter': filter,
             'round': round,
             'len': len,
@@ -91,9 +115,19 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
             'any': any,
             'ord': ord,
             'chr': chr,
+            # #if VERSION >= "17.0"
+            #'cmp': cmp,
+            # #elif VERSION == "master"
+            'cmp': cmp,
+            # #endif
             'divmod': divmod,
             'isinstance': isinstance,
             'range': range,
+            # #if VERSION >= "17.0"
+            #'xrange': xrange,
+            # #elif VERSION == "master"
+            'xrange': xrange,
+            # #endif
             'zip': zip,
             'Exception': Exception,
         }
@@ -105,14 +139,49 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
     c = test_expr(expr, _SAFE_OPCODES, mode=mode)
     try:
         return eval(c, globals_dict, locals_dict)
+    # #if VERSION >= "17.0"
+    except odoo.exceptions.except_orm:
+    # #elif VERSION == "master"
+    except openerp.osv.orm.except_orm:
+    # #endif 
         raise
+    # #if VERSION >= "17.0"
+    except odoo.exceptions.Warning:
+    # #elif VERSION == "master"
+    except openerp.exceptions.Warning:
+    # #endif 
         raise
+    # #if VERSION >= "17.0"
+    except odoo.exceptions.RedirectWarning:
+    # #elif VERSION == "master"
+    except openerp.exceptions.RedirectWarning:
+    # #endif 
         raise
+    # #if VERSION >= "17.0"
+    except odoo.exceptions.AccessDenied:
+    # #elif VERSION == "master"
+    except openerp.exceptions.AccessDenied:
+    # #endif 
         raise
+    # #if VERSION >= "17.0"
+    except odoo.exceptions.AccessError:
+    # #elif VERSION == "master"
+    except openerp.exceptions.AccessError:
+    # #endif 
         raise
     except OperationalError:
         # Do not hide PostgreSQL low-level exceptions, to let the auto-replay
         # of serialized transactions work its magic
         raise
+    # #if VERSION >= "17.0"
+    except Exception as e:
+    # #elif VERSION == "master"
+    except Exception, e:
+    # #endif 
         import sys
         exc_info = sys.exc_info()
+        # #if VERSION >= "17.0"
+        raise ValueError('"%s" while evaluating\n%r' % (ustr(e), expr), exc_info[2])
+        # #elif VERSION == "master"
+        raise ValueError, '"%s" while evaluating\n%r' % (ustr(e), expr), exc_info[2]
+        # #endif

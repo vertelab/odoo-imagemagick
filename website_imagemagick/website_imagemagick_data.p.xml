@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- #if VERSION >= "17.0" -->
+<odoo>-
+<!-- #elif VERSION == "master" -->
+<openerp>
+<!-- #endif -->
     <data noupdate="1">
 
     <!-- carousel image -->
         <record id="im_carousel_img" model="image.recipe">
             <field name="name">Carousel</field>
+            <!-- #if VERSION >= "17.0" -->
+            <field name="image_format">jpeg</field>
+            <!-- #endif -->
             <field name="recipe">image.transform(resize=width+'x'+'>')
 image.crop(int(left), int(top), image.width, int(bottom))
             </field>
@@ -38,6 +46,9 @@ image.crop(int(left), int(top), image.width, int(bottom))
     <!-- recipe square aspect ratio 1:1 -->
         <record id="img_square_thumnail" model="image.recipe">
             <field name="name">Square (Thumbnail)</field>
+            <!-- #if VERSION >= "17.0" -->
+            <field name="image_format">jpeg</field>
+            <!-- #endif -->
             <field name="description">Define the canvas size to limit the image maximum size.
 Define the background color with hex.
 </field>
@@ -83,6 +94,9 @@ res = bg
 
         <record id="img_square_thumnail_watermark_left_top" model="image.recipe">
             <field name="name">Square (Thumbnail) With Watermark Left Top</field>
+            <!-- #if VERSION >= "17.0" -->
+            <field name="image_format">jpeg</field>
+            <!-- #endif -->
             <field name="description">Define the canvas size to limit the image maximum size.
 Define the watermark image.
 Define the watermark image canvas_size (watermark image will hold the original aspect ratio).
@@ -129,6 +143,11 @@ res = bg
         </record>
         <record id="img_square_thumnail_watermark_left_top_param_wk" model="image.recipe.param">
             <field name="name">wk</field>
+            <!-- #if VERSION >= "17.0" -->
+            <field name="value">/usr/share/core-odoo/addons/base/static/img/main_partner-image.png</field>
+            <!-- #elif VERSION == "master" -->
+            <field name="value">/usr/share/odoo-addons/addons/base/static/img/main_partner-image.png</field>
+            <!-- #endif -->
             <field name="recipe_id" ref="website_imagemagick.img_square_thumnail_watermark_left_top"/>
         </record>
         <record id="img_square_thumnail_watermark_left_top_param_wk_trans" model="image.recipe.param">
@@ -150,6 +169,9 @@ res = bg
     <!-- recipe square aspect ratio 4:3 -->
         <record id="img_four_three_watermark_right_bottom" model="image.recipe">
             <field name="name">4:3 With Watermark Right Bottom</field>
+            <!-- #if VERSION >= "17.0" -->
+            <field name="image_format">jpeg</field>
+            <!-- #endif -->
             <field name="description">Define the height to limit the image maximum size.
 Define the watermark image.
 Define the watermark image width (watermark image will hold the original ratio).
@@ -215,6 +237,11 @@ res = bg
         </record>
         <record id="img_four_three_watermark_right_bottom_param_param_wk" model="image.recipe.param">
             <field name="name">wk</field>
+            <!-- #if VERSION >= "17.0" -->
+            <field name="value">/usr/share/core-odoo/addons/base/static/img/main_partner-image.png</field>
+            <!-- #elif VERSION == "master" -->
+            <field name="value">/usr/share/odoo-addons/addons/base/static/img/main_partner-image.png</field>
+            <!-- #endif -->
             <field name="recipe_id" ref="website_imagemagick.img_four_three_watermark_right_bottom"/>
         </record>
         <record id="img_four_three_watermark_right_bottom_param_wk_trans" model="image.recipe.param">
@@ -278,3 +305,8 @@ res = bg
             <field name="res_model">ir.ui.view</field>
         </record>
     </data>
+<!-- #if VERSION >= "17.0" -->
+</odoo>
+<!-- #elif VERSION == "master" -->
+</openerp>
+<!-- #endif -->

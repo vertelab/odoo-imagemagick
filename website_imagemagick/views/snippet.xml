@@ -1,46 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
     <data>
-<!--
-        <template id="s_big_picture" inherit_id="website.s_big_picture" name="Override image with imagemagick recipe: s_big_picture">
-            <xpath expr="//img[@src='/web/image/website.s_big_picture_default_image']" position="attributes">
-                <attribute name="src"/>
-                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_big_picture').id, request.env.ref('website_imagemagick.img_four_three_watermark_right_bottom').id)</attribute>
-            </xpath>
-        </template>
-        <template id="s_three_columns" inherit_id="website.s_three_columns" name="Override image with imagemagick recipe: s_three_columns">
-            <xpath expr="//img[@src='/web/image/website.library_image_11']" position="attributes">
-                <attribute name="src"/>
-                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_desert').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
-            </xpath>
-            <xpath expr="//img[@src='/web/image/website.library_image_13']" position="attributes">
-                <attribute name="src"/>
-                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_deers').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
-            </xpath>
-            <xpath expr="//img[@src='/web/image/website.library_image_07']" position="attributes">
-                <attribute name="src"/>
-                <attribute name="t-att-src">'/imagemagick/%s/id/%s' %(request.env.ref('website_imagemagick.attachment_china').id, request.env.ref('website_imagemagick.img_square_thumnail_watermark_left_top').id)</attribute>
-            </xpath>
-        </template>
--->
-        <!-- Web Editor Tools -->
-<!--
-        <template id="website_imagemagick_snippet_options" inherit_id="website.snippet_options" name="Website Imagemagick Snippet Options">
-            <xpath expr="//a[hasclass('snippet-option-background')]" position="after">
-                <t t-set="recipes" t-value="request.env['image.recipe'].search([('website_published', '=', True)])" />
-                <t t-if="recipes">
-                    <div id="so_main_recepiepicker" class="dropdown-submenu snippet-option-undefined">
-                        <a tabindex="-1" href="#" class="dropdown-item"><i class="fa fa-crop"/>Imagemagick Recipes</a>
-                        <div class="dropdown-menu" role="menu">
-                            <t t-foreach="recipes" t-as="recipe">
-                                <a class="dropdown-item" href="#" role="menuitem"><t t-esc="recipe.name" /></a>
-                            </t>
-                        </div>
-                    </div>
-                </t>
-            </xpath>
-        </template>
--->
 
         <template id="website_imagemagick_snippet_option_assets_frontend" inherit_id="website.assets_frontend" name="Website Imagemagick Snippet Option Access Frontend">
             <xpath expr="." position="inside">
@@ -53,4 +12,3 @@
             </xpath>
         </template>
     </data>
-</odoo>
