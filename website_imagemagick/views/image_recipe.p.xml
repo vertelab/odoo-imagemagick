@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- #if VERSION >= "17.0" -->
+<odoo>-
+<!-- #elif VERSION == "master" -->
+<openerp>
+<!-- #endif -->
 <data noupdate="1">
 
         <!-- image recipe kanban view -->
@@ -14,8 +19,57 @@
                     <field name="image_format"/>
                     <field name="recipe"/>
                     <field name="param_ids"/>
+                    <!-- #if VERSION >= "17.0" -->
+                    <field name="id"/>
+                    <!-- #endif -->
                     <templates>
                         <t t-name="kanban-box">
+                            <!-- #if VERSION >= "17.0" -->
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_car d oe_kanban_global_click">
+                                <div class="oe_dropdown_kanban">
+                                    <div class="oe_dropdown_toggle pull-right" groups="base.group_user">
+                                        <i class="fa fa-bars fa-lg" aria-label="Delete" title="Delete"></i>
+                                        <ul class="oe_dropdown_menu">
+                                            <li>
+                                                <a type="delete">Delete</a>
+                                            </li>
+                                            <li>
+                                                <ul class="oe_kanban_colorpicker"
+                                                    data-field="color"/>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="oe_clear"></div>
+                                </div>
+                                <div class="oe_kanban_content">
+                                    <div><b><field name="name"/></b></div>
+                                    <div><field name="param_list"/></div>
+                                    <a type="open"><img t-att-src="kanban_image('image.recipe', 'image', record.id.value)" style="max-width: 200px; max-height: 200px;" alt="Example image"/></a>
+                                </div>
+                                <div class="oe_clear"></div>
+                            <!-- #elif VERSION == "master" -->
+                        <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_dropdown_toggle oe_dropdown_kanban" groups="base.group_user">
+                                <span class="oe_e">í</span>
+                                <ul class="oe_dropdown_menu">
+                                    <t t-if="widget.view.is_action_enabled('edit')"><li><a type="edit">Edit...</a></li></t>
+                                    <t t-if="widget.view.is_action_enabled('delete')"><li><a type="delete">Delete</a></li></t>
+                                    <li><ul class="oe_kanban_colorpicker" data-field="color"/></li>
+                                </ul>
+                            </div>
+                            <div class="oe_kanban_content">
+                                <div><b><field name="name"/></b></div>
+                                <div><field name="param_list"/></div>
+                                <a type="open"><img t-att-src="kanban_image('image.recipe', 'image', record.id.value)" style="max-width: 200px; max-height: 200px;"/></a>
+                             </div>
+                            <!-- #endif -->
+                        <!-- #if VERSION >= "17.0" -->
+                        </t>
+                        <!-- #elif VERSION == "master" -->
+                            <div class="oe_clear"></div>
+                        </div>
+                    </t>
+                        <!-- #endif -->
                     </templates>
                 </kanban>
             </field>
@@ -80,6 +134,11 @@
                 <tree>
                     <field name="name"/>
                     <field name="param_list"/>
+                    <!-- #if VERSION >= "17.0" -->
+                    <!-- <field name="website_published"/> -->
+                    <!-- #elif VERSION == "master" -->
+                    <field name="website_published"/>
+                    <!-- #endif -->
                 </tree>
             </field>
         </record>
@@ -124,11 +183,23 @@
         <record id="action_image_recipe_all_view" model="ir.actions.act_window">
             <field name="name">Image Recipe</field>
             <field name="res_model">image.recipe</field>
+            <!-- #if VERSION >= "17.0" -->
+            <field name="binding_view_types">form</field>
+            <!-- #elif VERSION == "master" -->
+            <field name="view_type">form</field>
+            <!-- #endif -->
             <field name="view_mode">kanban,tree,form</field>
             <field name="view_id" ref="image_recipe_kanban_view"/>
             <field name="context">{"search_default_current": 1}</field>
         </record>
         
+        <!-- #if VERSION >= "17.0" -->
+        <menuitem id="menu_catalog_image_magick" name="ImageMagick"
+        parent="website.menu_website_configuration" sequence="100"
+        groups="website.group_website_designer"/>
+         <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="menu_catalog_image_magick" sequence="100" action="action_image_recipe_all_view"/>
+         <menuitem id="menu_image_recipe_all_view" name="Image Recipe" parent="base.menu_config" sequence="100" action="action_image_recipe_all_view"/>
+        <!-- #endif -->
 
     </data>
     <data>
@@ -136,6 +207,14 @@
            <!-- <template id="assets_frontend" inherit_id="website.assets_frontend">
             <xpath expr="." position="inside">
                 <script type="text/javascript">
+                    <!-- #if VERSION >= "17.0" -->
+                   odoo.define('website_imagemagick.device_tupe', function (require) {
+                   'use strict';
+                   var ajax = require("web.ajax");
+                   ajax.jsonRpc("/set_device_type", "call", {
+                    <!-- #elif VERSION == "master" -->
+                   openerp.jsonRpc("/set_device_type", "call", {
+                    <!-- #endif -->
                         width: $(window).width()
                     }).done(function(data){
                     });
@@ -145,3 +224,8 @@
         </template>
         --->
     </data>
+<!-- #if VERSION >= "17.0" -->
+</odoo>
+<!-- #elif VERSION == "master" -->
+</openerp>
+<!-- #endif -->

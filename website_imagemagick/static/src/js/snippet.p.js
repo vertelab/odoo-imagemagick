@@ -1,5 +1,17 @@
+// #if VERSION >= "17.0"
+odoo.define('website_imagemagick.snippets.editor',function (require) {
+'usestrict';
+varajax = require("web.ajax");
+varoptions = require('web_editor.snippets.options');
+varwebsite = openerp.website;
+// #endif
 var img_src = ''; // img src
 var current_taget = null;
+// #if VERSION >= "17.0"
+options.transform= options.Class.extend({
+// #elif VERSION == "master"
+website.snippet.options.transform= website.snippet.Option.extend({
+// #endif
     start: function () {
         var self = this;
         this._super();
@@ -76,6 +88,11 @@ var current_taget = null;
         }
         if (np.$next) {
             if (np.$next.hasClass("choose_recipe")) {
+                // #if VERSION >= "17.0"
+                ajax.jsonRpc("/website_imagemagick_recipe_change", "call", {
+                // #elif VERSION == "master"
+                openerp.jsonRpc("/website_imagemagick_recipe_change", "call", {
+                // #endif
                     "img_src": img_src,
                     "recipe_id": np.$next.data('value')
                 }).done(function(data){
