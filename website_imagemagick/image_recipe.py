@@ -86,7 +86,14 @@ class website_imagemagic(http.Controller):
             recipe = request.env.ref(recipe_ref) # 'imagemagick.my_recipe'
         if url:
             return recipe.send_file(url='/'.join(get_module_path(url.split('/')[0]).split('/')[0:-1]) + '/' + url)
-        return http.send_file(StringIO(recipe.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=recipe.image_format if recipe.image_format else 'png')))
+        return http._send_file(
+            StringIO(
+                recipe.run(
+                    Image(
+                        filename=get_module_path('web') + '/static/src/img/placeholder.png')
+                ).make_blob(format=recipe.image_format if recipe.image_format else 'png')
+            ), environ=request.httprequest.environ
+        )
 
     # this controller will control url: /imagefield/model_id/field_id/obj_id/ref/recipe_ref or /imagefield/model_id/field_id/obj_id/id/recipe_id
     @http.route([
@@ -421,14 +428,21 @@ class image_recipe(models.Model):
             return attachment.write_date
         return self.write_date
 
-    def send_file(self,attachment=None, url=None,field=None,model=None,id=None):   # return a image while given an attachment or an url
+    def send_file(self,attachment=None, url=None,field=None,model=None, id=None):   # return a image while given an attachment or an url
         # ~ mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
         mimetype = self.get_mimetype(attachment, model, field, id)
         if field:
             #o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
             o = self.env[model].sudo().search_read([('id','=',id)],[field])
             if not o:
-                return http.send_file(BytesIO(self.run(Image(filename=get_module_path('web') + '/static/src/img/placeholder.png')).make_blob(format=self.image_format if self.image_format else 'png')), mimetype=mimetype)
+                return http._send_file(
+                    BytesIO(
+                        self.run(
+                            Image(
+                                filename=get_module_path('web') + '/static/src/img/placeholder.png')
+                        ).make_blob(
+                            format=self.image_format if self.image_format else 'png')
+                    ), mimetype=mimetype, environ=request.httprequest.environ)
             o = o[0]
 
             if self.image_format == 'progressive_jpeg':
@@ -442,16 +456,34 @@ class image_recipe(models.Model):
                 img = open(f"/tmp/{unique_filename}", "r+b")
                 os.remove(f"/tmp/{unique_filename}")
                 mimetype = "image/jpg"
-                return http.send_file(img, mimetype=mimetype, filename=field)
+                # return http._send_file(img, mimetype=mimetype, filename=field)
+                return http._send_file(img, mimetype=mimetype, environ=request.httprequest.environ)
             else:
-                return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'jpg')), mimetype=mimetype, filename=field)
+                return http._send_file(
+                    BytesIO(
+                        self.run(
+                            Image(
+                                blob=codecs.decode(o[field], 'base64')
+                            )
+                        ).make_blob(format=self.image_format or 'jpg')
+                    ), mimetype=mimetype)
 
         if attachment:
             #_logger.warning('<<<<<<<<<<<<<< attachment >>>>>>>>>>>>>>>>: %s' % attachment)
             # ~ return http.send_file(BytesIO(self.run(Image(blob=codecs.decode(o[field], 'base64'))).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
-            return http.send_file(BytesIO(self.run(self.attachment_to_img(attachment)).make_blob(format=self.image_format or 'png')), mimetype=mimetype, filename=attachment.datas_fname, mtime=self.get_mtime(attachment))
+            return http._send_file(
+                BytesIO(
+                    self.run(
+                        self.attachment_to_img(attachment)
+                    ).make_blob(format=self.image_format or 'png')
+                ), mimetype=mimetype, environ=request.httprequest.environ)
         #~ return http.send_file(self.run(self.url_to_img(url)), filename=url)
-        return http.send_file(BytesIO(self.run(Image(filename=url)).make_blob(format=self.image_format or 'png')),mimetype=mimetype)
+        return http._send_file(
+            BytesIO(
+                self.run(
+                    Image(filename=url)
+                ).make_blob(format=self.image_format or 'png')
+            ), mimetype=mimetype, environ=request.httprequest.environ)
 
     @api.model
     def get_mimetype(self, attachment=None, model=None, field=None, id=None):
@@ -466,7 +498,10 @@ class image_recipe(models.Model):
 
     def run(self, image, **kwargs):   # return a image with specified recipe
         kwargs.update({p.name: p.value for p in self.param_ids})
-        kwargs.update({p.name: p.value for p in self.param_ids.filtered(lambda p: p.device_type == request.session.get('device_type','md'))})    #get parameters from recipe
+        kwargs.update({
+            p.name: p.value for p in self.param_ids.filtered(
+                lambda p: p.device_type == request.session.get('device_type','md'))
+        })    #get parameters from recipe
         #TODO: Remove time import once caching is working
         import time
         # ~ company = request.website_id.company_id if request.website_id else self.env.user.company_id
