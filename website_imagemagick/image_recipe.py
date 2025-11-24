@@ -25,7 +25,7 @@ from odoo.exceptions import RedirectWarning
 from odoo import http
 from odoo.http import request, STATIC_CACHE
 from datetime import datetime
-from odoo.modules import get_module_resource, get_module_path
+from odoo.modules import get_module_path
 import werkzeug
 import pytz
 import re

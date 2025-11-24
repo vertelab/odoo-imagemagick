@@ -20,7 +20,7 @@
 ##############################################################################
 
 import odoo
-from odoo.tools.safe_eval import _SAFE_OPCODES, test_expr, _import
+from odoo.tools.safe_eval import _SAFE_OPCODES, _import
 from odoo.tools.misc import ustr
 from opcode import opmap
 from psycopg2 import OperationalError
@@ -31,7 +31,7 @@ _logger = logging.getLogger(__name__)
 
 _SAFE_OPCODES.add(opmap['STORE_ATTR'])
 
-def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=False, locals_builtins=False):
+def depricart_safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=False, locals_builtins=False):
     """safe_eval(expression[, globals[, locals[, mode[, nocopy]]]]) -> result
 
     System-restricted Python expression evaluation
@@ -133,3 +133,79 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
         import sys
         exc_info = sys.exc_info()
         raise ValueError('"%s" while evaluating\n%r' % (ustr(e), expr), exc_info[2])
+
+def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=False, locals_builtins=False):
+    if isinstance(expr, CodeType):
+        raise TypeError("safe_eval does not allow direct evaluation of code objects.")
+
+    if globals_dict is None:
+        globals_dict = {}
+
+    if not nocopy:
+        if (globals_dict is not None and type(globals_dict) is not dict) \
+           or (locals_dict is not None and type(locals_dict) is not dict):
+            _logger.warning("You should pass nocopy=True for dynamic environments.")
+        globals_dict = dict(globals_dict)
+        if locals_dict is not None:
+            locals_dict = dict(locals_dict)
+
+    globals_dict.update(
+        __builtins__={
+            '__import__': _import,
+            'True': True,
+            'False': False,
+            'None': None,
+            'str': str,
+            'bool': bool,
+            'int': int,
+            'float': float,
+            'enumerate': enumerate,
+            'dict': dict,
+            'list': list,
+            'tuple': tuple,
+            'map': map,
+            'abs': abs,
+            'min': min,
+            'max': max,
+            'sum': sum,
+            'filter': filter,
+            'round': round,
+            'len': len,
+            'repr': repr,
+            'set': set,
+            'all': all,
+            'any': any,
+            'ord': ord,
+            'chr': chr,
+            'divmod': divmod,
+            'isinstance': isinstance,
+            'range': range,
+            'zip': zip,
+            'Exception': Exception,
+        }
+    )
+
+    if locals_builtins:
+        if locals_dict is None:
+            locals_dict = {}
+        locals_dict.update(globals_dict.get('__builtins__'))
+
+    try:
+        # Directly evaluate without test_expr
+        return eval(expr, globals_dict, locals_dict)
+    except odoo.exceptions.except_orm:
+        raise
+    except odoo.exceptions.Warning:
+        raise
+    except odoo.exceptions.RedirectWarning:
+        raise
+    except odoo.exceptions.AccessDenied:
+        raise
+    except odoo.exceptions.AccessError:
+        raise
+    except OperationalError:
+        raise
+    except Exception as e:
+        import sys
+        exc_info = sys.exc_info()
+        raise ValueError('"%s" while evaluating\n%r' % (expr, expr), exc_info[2])
