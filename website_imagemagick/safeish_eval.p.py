@@ -73,11 +73,19 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
             'False': False,
             'None': None,
             'str': str,
+            # #if VERSION >= "17.0"
             # ~ 'unicode': unicode,
+            # #elif VERSION == "master"
+            # 'unicode': unicode,
+            # #endif
             'bool': bool,
             'int': int,
             'float': float,
+            # #if VERSION >= "17.0"
             # ~ 'long': long,
+            # #elif VERSION == "master"
+            # 'long': long,
+            # #endif
             'enumerate': enumerate,
             'dict': dict,
             'list': list,
@@ -87,7 +95,11 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
             'min': min,
             'max': max,
             'sum': sum,
+            # #if VERSION >= "17.0"
             # ~ 'reduce': reduce,
+            # #elif VERSION == "masetr"
+            # 'reduce': reduce,
+            # #endif
             'filter': filter,
             'round': round,
             'len': len,
@@ -97,11 +109,19 @@ def safe_eval(expr, globals_dict=None, locals_dict=None, mode="eval", nocopy=Fal
             'any': any,
             'ord': ord,
             'chr': chr,
+            # #if VERSION >= "17.0"
             #'cmp': cmp,
+            # #elif VERSION == "master"
+            # 'cmp': cmp,
+            # #endif
             'divmod': divmod,
             'isinstance': isinstance,
             'range': range,
+            # #if VERSION >= "17.0"
             #'xrange': xrange,
+            # #elif VERSION == "master"
+            # 'xrange': xrange,
+            # #endif
             'zip': zip,
             'Exception': Exception,
         }
