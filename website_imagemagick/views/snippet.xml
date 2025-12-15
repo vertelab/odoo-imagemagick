@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
     <data>
-
         <template id="website_imagemagick_snippet_option_assets_frontend" inherit_id="website.assets_frontend" name="Website Imagemagick Snippet Option Access Frontend">
             <xpath expr="." position="inside">
                 <script type="text/javascript" src="/website_imagemagick/static/src/js/main.js" />
