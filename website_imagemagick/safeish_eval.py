@@ -18,6 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+import odoo
+from odoo.tools.safe_eval import _SAFE_OPCODES, test_expr, _import
+from odoo.tools.misc import ustr
 from opcode import opmap
 from psycopg2 import OperationalError
 from types import CodeType
