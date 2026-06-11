@@ -243,6 +243,14 @@ class website(models.Model):
         The requested field is assumed to be base64-encoded image data in
         all cases.
         """
+        if field and field not in self.env[model]._fields:
+            _logger.warning("Field %r does not exist on model %r", field, model)
+            return http.send_file(
+                BytesIO(Image(
+                    filename=get_module_path('web') + '/static/src/img/placeholder.png'
+                ).make_blob(format='png')),
+                mimetype='image/png')
+
         user = self.env['res.users'].browse(self._uid)
         o = self.env[model].sudo().browse(int(id))
         if o.check_access_rights('read', raise_exception=False):
@@ -433,6 +441,13 @@ class image_recipe(models.Model):
         # ~ mimetype = 'image/%s' % self.image_format if self.image_format else 'png'
         mimetype = self.get_mimetype(attachment, model, field, id)
         if field:
+            if field not in self.env[model]._fields:
+                _logger.warning("Field %r does not exist on model %r", field, model)
+                return http.send_file(
+                    BytesIO(self.run(Image(
+                        filename=get_module_path('web') + '/static/src/img/placeholder.png'
+                    )).make_blob(format=self.image_format or 'png')),
+                    mimetype=mimetype)
             #o = self.env[model].sudo().browse(int(id if id.isdigit() else 0))
             o = self.env[model].sudo().search_read([('id','=',id)],[field])
             if not o:
