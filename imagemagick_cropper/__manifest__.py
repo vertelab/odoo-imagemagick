@@ -25,11 +25,16 @@
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Crop images using Wand.',
     'category': 'Technical',
-    'description': """
-Crop images
-===========
-Crop images using Wand.
-""",
+    'description': '''
+Imagemagick: Cropper
+====================
+
+    Crop images using Wand.
+
+    Features:
+
+        - Focused Fix: A small, targeted improvement to standard Odoo behaviour.
+    ''',
     #'sequence': '1',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-imagemagick/imagemagick_cropper',

@@ -25,11 +25,17 @@
     # Version ledger: 14.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Website acceleration for imagemagick using memcached.',
     'category': 'Technical',
-    'description': """
-Add mechanisms to cache rendered images
-This module depends on website_memcached
+    'description': '''
+Imagemagick: Website Memcashed
+==============================
 
-""",
+    Add mechanisms to cache rendered images
+    This module depends on website_memcached
+
+    Features:
+
+        - Extends Odoo: Builds on image.recipe, website.
+    ''',
     #'sequence': '1',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-imagemagick/website_memcached_imagemagick',

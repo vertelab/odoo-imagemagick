@@ -20,20 +20,20 @@
 ##############################################################################
 {
     'name': 'Image: Imagemagick: Website',
-    'version': '1.0',
-    'summary': 'Advanced Image handling',
+    'version': '18.0.1.0.0',
+    'summary': 'Advanced Image handling.',
     'category': 'Technical',
     'description': 
-    """
-        Advanced Image handling
-        =======================
+    '''
+Imagemagick: Website
+====================
 
-        * Use responsive avare recipies for image handling
-        * Web Editor Tools for end user, choose recipe for your images as you are creating pages
-        * Tools for qweb use
+    https://graphicdesign.stackexchange.com/questions/39430/using-imagemagick-to-create-vibrant-images
 
-        https://graphicdesign.stackexchange.com/questions/39430/using-imagemagick-to-create-vibrant-images
-    """,
+    Features:
+
+        - UI Integration: Extends 2 view(s) in the Odoo interface.
+    ''',
     'author': 'Vertel AB',
     'website': 'https://vertel.se/apps/odoo-imagemagick/website_imagemagick',
     'images': ['static/description/banner.png'], # 560x280 px.

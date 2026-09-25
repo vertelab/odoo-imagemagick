@@ -1,164 +1,101 @@
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan" style="color:#875A7B;">Your enterprise website builder</h2>
-        <h3 class="oe_slogan">Easy. Mobile. Open Source.</h3>
-        <div class="text-center oe_mt32">
-          <video width="70%" height="70%" controls>
-            <source src="https://www.odoo.com/openerp_website/static/src/video/wbuilder/Editing.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image: Imagemagick: Website Memcashed &mdash; Vertel for Odoo</title>
+  <style>
+    :root { --navy:#0F172A; --darkBg:#1E293B; --white:#F8FAFC; --gray:#94A3B8;
+             --lightGray:#E2E8F0; --brand:#930a57; --brand2:#8105a7; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:Inter,system-ui,-apple-system,sans-serif; color:var(--darkBg);
+            background:var(--white); line-height:1.6; }
+    .hero { background:linear-gradient(135deg,var(--brand),var(--brand2)); color:var(--white);
+             padding:48px 32px; text-align:center; }
+    .hero h1 { font-size:2.25rem; font-weight:800; margin-bottom:8px; }
+    .hero .subtitle { font-size:1.1rem; color:#f3d7e6; }
+    .hero .meta { margin-top:16px; font-size:0.85rem; color:#e8b8d2; }
+    .hero .meta span { margin:0 8px; }
+    .container { max-width:860px; margin:0 auto; padding:40px 24px; }
+    section { margin-bottom:40px; }
+    section h2 { font-size:1.5rem; font-weight:700; color:var(--navy);
+                  margin-bottom:16px; padding-bottom:8px; border-bottom:2px solid var(--brand); }
+    section p, section li { font-size:1rem; color:#334155; }
+    section p { margin-bottom:12px; }
+    section ul { padding-left:24px; }
+    section li { margin-bottom:8px; }
+    .feature-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+                     gap:16px; margin-top:16px; }
+    .feature-card { background:#F1F5F9; border-radius:8px; padding:20px;
+                     border-left:4px solid var(--brand); }
+    .feature-card h4 { font-size:1rem; font-weight:600; color:var(--navy); margin-bottom:6px; }
+    .feature-card p { font-size:0.9rem; color:#475569; margin:0; }
+    .screenshots { display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start; }
+    .screenshots figure { margin:0; text-align:center; }
+    .screenshots img { display:block; border-radius:8px;
+                        box-shadow:0 2px 8px rgba(0,0,0,0.08);
+                        border:1px solid var(--lightGray); }
+    .screenshots figcaption { margin-top:8px; font-size:0.8rem; color:var(--gray); }
+    footer { background:var(--navy); color:var(--white); text-align:center;
+              padding:32px 24px; font-size:0.9rem; }
+    footer a { color:#f3d7e6; text-decoration:none; }
+  </style>
+</head>
+<body>
+<div class="hero">
+  <h1>Image: Imagemagick: Website Memcashed</h1>
+  <p class="subtitle">Website acceleration for imagemagick using memcached.</p>
+  <div class="meta">
+    <span>Odoo 18.0</span><span>&middot;</span>
+    <span>Technical</span><span>&middot;</span>
+    <span>by Vertel Sverige AB</span>
+  </div>
+</div>
+<div class="container">
+  <section id="overview">
+    <h2>Overview</h2>
+    <p>Website acceleration for imagemagick using memcached.</p>
+    <p>It introduces the model(s) <code>image_recipe</code>, <code>image_recipe</code> to handle this workflow.</p>
+  </section>
+  <section id="features">
+    <h2>Key Features</h2>
+    <div class="feature-grid">
+      <div class="feature-card"><h4>Dedicated data model</h4><p>Adds its own models: image_recipe, image_recipe.</p></div>
     </div>
-</section>
-
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan" style="color:#875A7B;">Forget about c &lt;&gt;de</h2>
-        <h3 class="oe_slogan">Just drag &amp; drop business features</h3>
-        <div class="oe_span6">
-          <p class="oe_mt32">
-            Get all your business needs, out-of-the-box.<br/>Add features as you grow: jobs, e-commerce, customer portal, events, company blog, call-to-action, newsletter, etc.
-            </p>
-        </div>
-        <div class="oe_span6">
-          <img class="oe_picture oe_screenshot" src="ecommerce.png"/>
-        </div>
+  </section>
+  <section id="screenshots">
+    <h2>Module Graphics</h2>
+    <div class="screenshots">
+      <figure>
+        <img src="icon.png" alt="Image: Imagemagick: Website Memcashed icon" width="140" height="140">
+        <figcaption>Icon &mdash; 140 &times; 140 px</figcaption>
+      </figure>
+      <figure>
+        <img src="banner.png" alt="Image: Imagemagick: Website Memcashed banner" width="560" height="280">
+        <figcaption>Banner &mdash; 560 &times; 280 px</figcaption>
+      </figure>
     </div>
-</section>
-
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan" style="color:#875A7B;">Your brand. Your website.</h2>
-        <div class="oe_span6">
-          <img class="oe_picture oe_screenshot" src="website_edit.png">
-        </div>
-        <div class="oe_span6">
-          <p class="oe_mt32 text-justify">
-          Get a website that automatically adjusts to fit your brand and style guidelines.<br/>Branding is critical for business success. Odoo provides you tools to easily achieve branding needs.
-          </p>
-        </div>
-    </div>
-</section>
-
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan" style="color:#875A7B;">Turn visitors into customers</h2>
-        <h3 class="oe_slogan">With a fully integrated marketing stack</h3>
-        <div class="oe_span6">
-          <h3 class="oe_slogan" style="margin-top: 8px;">SEO Tools</h3>
-          <p class="text-justify">
-          Our Search Engine Optimization tool integrates with Google to analyze the relevancy of your content in real time. Get more visitors with a better targeted content.
-          </p>
-          <p class="text-justify">
-          Your website is optimized by default. You don't have to worry about technical 301 redirects, page speeds, google schemas, twitter cards, sitemaps, etc.
-        </div>
-        <div class="oe_span6">
-          <h3 class="oe_slogan" style="margin-top: 8px;">Call to Action</h3>
-          <p class="text-justify">
-          Easily drag &amp; drop call-to-actions to boost your conversion rates. Choose the best call to action for every page: customize forms, add pop-up on exits, fine tune newsletter subscriptions, etc.
-          </p>
-          <p class="text-justify">
-          Get an efficient lead nurturing with marketing automation and have everything integrated with your CRM.
-          </p>
-        </div>
-    </div>
-</section>
-
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h3 class="oe_slogan">A/B Testing</h3>
-        <div class="oe_span6 text-justify">
-          <p>
-          Test variations before publishing any page. Launch A/B testing campaigns in just a click. Use the integration with other modules to measure impact on leads, revenues, conversion rates, etc. Nothing to configure, it all works out-of-the-box.
-          </p>
-          <p>
-          Save time by having your full marketing stack fully integrated. Getting a top level marketing automation is a piece of cake with Odoo.
-          </p>
-        </div>
-        <div class="oe_span6">
-          <img class="oe_picture" src="a_b_testing.png" style="margin-top: -32px;">
-        </div>
-    </div>
-</section>
-
-<section class="oe_container oe_dark">
-    <div class="oe_row oe_spaced">
-        <h3 class="oe_slogan">Track Visitors</h3>
-        <div class="oe_span6">
-          <img class="oe_picture" src="users.png" style="margin-top: -32px;">
-        </div>
-        <div class="oe_span6 text-justify">
-            <p>
-            Track visitors inside and outside your website. Measure the performance of your marketing campaign whether it's by email or through external websites or social media.
-            </p>
-            <p>
-            Track pages in just a click and get notified automatically in your CRM when your leads visits key pages. Launch live chat sessions to contact them in real time when they visit your website.
-            </p>
-        </div>
-    </div>
-</section>
-
-<section class="oe_container oe_dark">
-    <div class="oe_row">
-        <h3 class="oe_slogan" style="margin-top: -32px;">Mass Mailing</h3>
-        <div class="oe_span6 text-justify">
-            <p>
-            From email acquisition to mass mailing, get everything fully integrated. Get statistics on your mails, from the clicks to the revenue with a full integration between sale and accounting.
-            </p>
-            <p>
-            Forget about using third party apps. You don't need to import/export list of contacts, configure trackers between mails, website and orders, etc. It all works out-of-the-box.
-            </p>
-        </div>
-        <div class="oe_span6">
-            <img class="oe_picture" src="flow.png" style="margin-top: -32px;">
-        </div>
-    </div>
-</section>
-
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan" style="color:#875A7B;">Extend your website with hundreds of Apps</h2>
-        <div class="oe_span4">
-          <h4><b>Sell Online</b></h4>
-          <ul class="list-unstyled">
-            <li>- eCommerce</li>
-            <li>- Event Tickets</li>
-          </ul>
-          <h4 class="oe_mt32"><b>Full Marketing Stack</b></h4>
-          <ul class="list-unstyled">
-            <li>- Lead Acquisition</li>
-            <li>- Lead Tracking</li>
-            <li>- Live Chat</li>
-            <li>- Mass Mailing</li>
-          </ul>
-          <h4 class="oe_mt32"><b>Link Business Features</b></h4>
-          <ul class="list-unstyled">
-            <li>- Recruitments</li>
-            <li>- Helpdesk</li>
-          </ul>
-        </div>
-        <div class="oe_span4">
-          <h4><b>Marketplaces Integrations</b></h4>
-          <ul class="list-unstyled">
-          <li>- Amazon <small>(coming soon)</small></li>
-          <li>- eBay</li>
-          </ul>
-          <h4 class="oe_mt32"><b>Content Management</b></h4>
-          <ul class="list-unstyled">
-            <li>- Blogs</li>
-            <li>- Presentation</li>
-            <li>- Forums, Q&amp;A</li>
-          </ul>
-          <br/>
-          <h4 style="margin-top: 23px;">
-            <b>Easy inline edition of highly dynamic content.</b>
-          </h4>
-        </div>
-        <div class="oe_span4">
-          <img class="oe_picture" src="website_sc_04.png">
-        </div>
-    </div>
-</section>
-
-<section class="oe_container oe_separator">
-</section>
+  </section>
+  <section id="dependencies">
+    <h2>Dependencies</h2>
+    <ul><li><code>website_memcached</code></li><li><code>website_imagemagick</code></li></ul>
+    <p><small>Requires <strong>Odoo 18.0</strong> or later.</small></p>
+  </section>
+  <section id="installation">
+    <h2>Installation</h2>
+    <p>Install the module <code>website_memcached_imagemagick</code> from the Odoo Apps menu,
+       or deploy it via the Vertel SaltStack pipeline.</p>
+  </section>
+  <section id="support">
+    <h2>Support &amp; Contact</h2>
+    <p>Vertel Sverige AB &mdash; <a href="https://vertel.se">vertel.se</a> &middot;
+       <a href="mailto:info@vertel.se">info@vertel.se</a></p>
+  </section>
+</div>
+<footer>
+  <p><strong>Image: Imagemagick: Website Memcashed</strong> &mdash; by <a href="https://vertel.se">Vertel Sverige AB</a></p>
+  <p><a href="https://vertel.se">vertel.se</a> &middot;
+     <a href="mailto:info@vertel.se">info@vertel.se</a></p>
+</footer>
+</body>
+</html>
