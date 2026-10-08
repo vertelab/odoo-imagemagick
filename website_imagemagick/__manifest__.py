@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Odoo SA, Open Source Management Solution, third party addon
-#    Copyright (C) 2022- Vertel AB (<https://vertel.se>).
+#    Copyright (C) 2022- Vertel Sverige AB (<https://vertel.se>).
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -20,26 +20,26 @@
 ##############################################################################
 {
     'name': 'Image: Imagemagick: Website',
-    'version': '18.0.1.0.0',
-    'summary': 'Advanced Image handling.',
+    'version': '1.0',
+    'summary': 'Advanced Image handling',
     'category': 'Technical',
     'description': 
-    '''
-Imagemagick: Website
-====================
+    """
+        Advanced Image handling
+        =======================
 
-    https://graphicdesign.stackexchange.com/questions/39430/using-imagemagick-to-create-vibrant-images
+        * Use responsive avare recipies for image handling
+        * Web Editor Tools for end user, choose recipe for your images as you are creating pages
+        * Tools for qweb use
 
-    Features:
-
-        - UI Integration: Extends 2 view(s) in the Odoo interface.
-    ''',
-    'author': 'Vertel AB',
+        https://graphicdesign.stackexchange.com/questions/39430/using-imagemagick-to-create-vibrant-images
+    """,
+    'author': 'Vertel Sverige AB',
     'website': 'https://vertel.se/apps/odoo-imagemagick/website_imagemagick',
     'images': ['static/description/banner.png'], # 560x280 px.
     'license': 'AGPL-3',
     'contributor': '',
-    'maintainer': 'Vertel AB',
+    'maintainer': 'Vertel Sverige AB',
     'repository': 'https://github.com/vertelab/odoo-imagemagick',
     'depends': ['base', 'website'],
     'external_dependencies': {
@@ -57,3 +57,4 @@ Imagemagick: Website
     'application': True,
     # 'installable': True,
 }
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
